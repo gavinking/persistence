@@ -17,6 +17,9 @@
 package jakarta.persistence;
 
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
@@ -221,4 +224,27 @@ public interface EntityManagerFactory extends AutoCloseable {
      */
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph);
 
+    /**
+     * Create a new application-managed {@code EntityManager}, start a resource-local
+     * transaction, and call the given function, passing the {@code EntityManager}.
+     * If the given function does not throw an exception, commit the transaction and
+     * return the result of the function. If the function does throw an exception,
+     * roll back the transaction and rethrow the exception. Finally, close the
+     * {@code EntityManager}.
+     *
+     * @param work a function to be called in the scope of the transaction
+     */
+    public void withTransaction(Consumer<EntityManager> work);
+    /**
+     * Create a new application-managed {@code EntityManager}, start a resource-local
+     * transaction, and call the given function, passing the {@code EntityManager}.
+     * If the given function does not throw an exception, commit the transaction and
+     * return the result of the function. If the function does throw an exception,
+     * roll back the transaction and rethrow the exception. Finally, close the
+     * {@code EntityManager}.
+     *
+     * @param work a function to be called in the scope of the transaction
+     * @return the value returned by the given function
+     */
+    public <R> R withTransaction(Function<EntityManager,R> work);
 }

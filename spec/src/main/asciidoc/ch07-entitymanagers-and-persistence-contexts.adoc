@@ -412,6 +412,17 @@ public interface EntityManagerFactory extends AutoCloseable {
      */
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph);
 
+    /**
+     * Create a new application-managed {@code EntityManager}, start a resource-local
+     * transaction, and call the given function, passing the {@code EntityManager}.
+     * If the given function does not throw an exception, commit the transaction and
+     * return the result of the function. If the function does throw an exception,
+     * roll back the transaction and rethrow the exception. Finally, close the
+     * {@code EntityManager}.
+     *
+     * @param work a function to be called in the scope of the transaction
+     */
+    public <R> R withTransaction(Function<EntityManager,R> work);
 }
 ----
 
@@ -577,14 +588,13 @@ public class PasswordChanger {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        User user = (User)em.createQuery
-            ("SELECT u FROM User u WHERE u.name=:name AND u.pass=:pass")
+        User user = em.createQuery
+            ("SELECT u FROM User u WHERE u.name=:name AND u.pass=:pass", User.class)
             .setParameter("name", args[0])
             .setParameter("pass", args[1])
             .getSingleResult();
 
-        if (user!=null)
-            user.setPassword(args[2]);
+        user.setPassword(args[2]);
 
         em.getTransaction().commit();
         em.close();
@@ -592,6 +602,48 @@ public class PasswordChanger {
     }
 }
 ----
+
+=== The withTransaction method
+
+The _withTransaction_ method of the _EntityManagerFactory_ provides
+a shortcut for session and transaction management with an
+application-managed _EntityManager_ and a resource-local
+_EntityTransaction_.
+
+[source,java]
+----
+entityManagerFactory.withTransaction( entityManager -> {
+    User user = em.createQuery
+        ("SELECT u FROM User u WHERE u.name=:name AND u.pass=:pass", User.class)
+        .setParameter("name", args[0])
+        .setParameter("pass", args[1])
+        .getSingleResult();
+
+    user.setPassword(args[2]);
+
+	return null;
+})
+----
+
+The argument function passed to _withTransaction_ must be called
+and passed a new instance of _EntityManager_. When the function
+returns or throws an exception, this _EntityManager_ must be closed
+before _withTransaction_ returns.
+
+The argument function passed to _withTransaction_ is executed in
+the context of a resource-local transaction associated with this
+new _EntityManager_. If the argument function throws an exception,
+the transaction must be rolled back, and then the exception must be
+rethrown by _withTransaction_. If the argument function returns,
+then _withTransaction_ must attempt to commit the transaction.
+If the attempt to commit the transaction fails, the exception must
+be rethrown by _withTransaction_. Otherwise, _withTransaction_ must
+return the value returned by the function, if any.
+
+The application should not attempt to manage the resource-local
+transaction directly. If the application calls any operations of
+_EntityTransaction_ from within a call to _withTransaction_, the
+behavior is undefined.
 
 === Container-managed Persistence Contexts [[a11791]]
 
