@@ -1801,18 +1801,24 @@ Its operands must be string expressions.
 
 ===== Built-in String, Arithmetic, and Datetime Functional Expressions
 
-The Jakarta Persistence query language includes
-the built-in functions described in <<a5264>>, <<a5284>>,
-<<a5304>>, which may be used
-in the SELECT, WHERE or HAVING clause of a query. The invocation of
-predefined database functions and user-defined database functions is
-described in <<a5311>>.
+A _functional expression_ is an invocation of a function.
 
-If the value of any argument to a functional
-expression is null or unknown, the value of the functional expression is
-unknown.
+- The Jakarta Persistence query language includes the built-in functions
+  described below in <<a5264>>, <<a5284>>, and <<a5304>>. These functions
+  may be used in the SELECT, WHERE, or HAVING clause of a query. Use of
+  these functions is portable between databases and between providers.
+
+- <<a5311>> describes how predefined native database functions and
+  user-defined database functions may be used from within JPQL. Such
+  functions are not portable between databases.
+
+If the value of any argument to a functional expression is null or unknown,
+the value of the functional expression is unknown.
 
 ====== String Functions [[a5264]]
+
+String functions accept or return strings. In Jakarta Persistence, string
+functions use 1-based indexing, like SQL, and unlike Java.
 
 ----
 functions_returning_strings ::=
@@ -1832,30 +1838,31 @@ functions_returning_numerics ::=
     LOCATE(string_expression, string_expression[, arithmetic_expression])
 ----
 
-The CONCAT function returns a string that is
-a concatenation of its arguments.
+The CONCAT function accepts an arbitrary-length list of argument strings,
+and returns a string that is the concatenation of its arguments.
 
-The second and third arguments of the
-SUBSTRING function denote the starting position and length of the
-substring to be returned. These arguments are integers. The third
-argument is optional. If it is not specified, the substring from the
-start position to the end of the string is returned. The first position
-of a string is denoted by 1. The SUBSTRING function returns a string.
+The SUBSTRING function returns a substring of its first argument.
+The second and third arguments specify the starting position and
+length of the substring to be returned. These arguments are integers.
+The third argument is optional. If it is not specified, the substring
+from the start position to the end of the string is returned. The first
+position of a string is denoted by 1.
 
-The TRIM function trims the specified
-character from a string. If the character to be trimmed is not
-specified, it will be assumed to be space (or blank). The optional
-`trim_character` __ is a single-character string literal or a
-character-valued input parameter (i.e., `char` or `Character`
-)footnote:[Note that not all
-databases support the use of a trim character other than the space
-character; use of this argument may result in queries that are not
-portable.]. If a trim specification is not provided, it
-defaults to BOTH. The TRIM function returns the trimmed string.
+The TRIM function trims the specified character from a string. The
+optional `trim_specification`, if any, determines whether characters
+should be trimmed from the start of the string, the end of the string,
+or both. If a trim specification is not specified, it defaults to BOTH.
+The optional `trim_character` is a single-character string literal or
+a character-valued input parameter (i.e., `char` or `Character`).
+footnote:[Note that not every database supports the use of a trim
+character other than the space character; use of this argument may
+result in queries which are not portable between databases.] If the
+character to be trimmed is not explicitly specified, it is be assumed
+to be space (or blank). The TRIM function returns the trimmed string.
 
-The LOWER and UPPER functions convert a
-string to lower and upper case, respectively, with regard to the locale
-of the database. They return a string.
+The LOWER and UPPER functions convert a string to lower and upper case,
+respectively, according to the locale of the database. They return a
+string.
 
 The LEFT and RIGHT functions return the leftmost or rightmost substring,
 respectively, of the first argument whose length is given by the second
@@ -1878,10 +1885,18 @@ the second string, 0 is returned.footnote:[Note that not all databases
 support the use of the third argument to LOCATE; use of this argument may
 result in queries that are not portable.]
 
-The LENGTH function returns the length of the
-string in characters as an integer.
+The LENGTH function returns the length of the argument string measured in
+characters as an integer.
 
 ====== Arithmetic Functions [[a5284]]
+
+Arithmetic functions accept or return numeric values.
+
+- The basic types `long`, `int`, `short`, `byte`, `Long`, `Integer`,
+ `Short`, `Byte`, and `BigInteger` are considered integer numeric types.
+
+- The basic types `float`, `double`, `Float`, `Double`, and `BigDecimal`
+  are considered non-integer numeric types.
 
 ----
 functions_returning_numerics ::=
@@ -1900,37 +1915,39 @@ functions_returning_numerics ::=
     extract_datetime_field
 ----
 
-The ABS, CEILING, and FLOOR functions accept a numeric argument and
-return a number (integer, float, or double) of the same type as the
-argument.
+The ABS (absolute value), CEILING, and FLOOR functions accept a numeric
+argument and return a number (integer, float, or double) of the same
+numeric type as the argument.
 
-The SIGN function accepts a numeric argument and returns an integer.
+The SIGN function accepts a numeric argument and returns an integer,
+either `0`, `1`, or `-1`, according to whether its argument is zero,
+positive, or negative.
 
-The SQRT, EXP, and LN functions accept a numeric argument and return
-a double.
+The SQRT (positive square root), EXP (exponential), and LN (natural
+logarithm) functions accept a numeric argument and return a double.
 
-The MOD function accepts two integer arguments and returns an integer.
+The MOD (integer division) function accepts two integer arguments and
+returns an integer.
 
 The ROUND function accepts a numeric argument and an integer argument
-and returns a number of the same type as the first argument.
+and returns a number of the same type as the first argument. The
+second argument specifies the maximum number of significant digits to
+the right of the decimal point.
 
 The POWER function accepts two numeric arguments and returns a double.
+The first argument is the base, and the second number is the exponent.
 
-Numeric arguments to these functions may
-correspond to the numeric Java object types as well as the primitive
-numeric types.
+The SIZE function returns an integer value, the number of elements of
+the collection. If the collection is empty, the SIZE function evaluates
+to zero.
 
-The SIZE function returns an integer value,
-the number of elements of the collection. If the collection is empty,
-the SIZE function evaluates to zero.
+The INDEX function returns an integer value identifying the position of
+its argument in an ordered list. The INDEX function can only be applied
+to identification variables denoting elements of a list for which an
+order column has been specified.
 
-The INDEX function returns an integer value
-corresponding to the position of its argument in an ordered list. The
-INDEX function can only be applied to identification variables denoting
-types for which an order column has been specified.
-
-In the following example, _studentWaitlist_
-is a list of students for which an order column has been specified:
+In the following example, _studentWaitlist_ is a list of students for
+which an order column has been specified:
 
 [source,sql]
 ----
