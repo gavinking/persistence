@@ -1,5 +1,5 @@
 [appendix]
-== Criteria API Interfaces
+== Criteria API Interfaces [[a6997]]
 
 === `CriteriaBuilder`
 [source,java]

@@ -254,7 +254,7 @@ Persistence providers may, but are not required to, support the use of
 non-canonical metamodel classes.
 
 
-=== Metamodel API Interfaces
+=== Runtime Access to Metamodel
 
 The interfaces defined in `jakarta.persistence.metamodel` provide for
 dynamic access to a metamodel of the persistent state and relationships

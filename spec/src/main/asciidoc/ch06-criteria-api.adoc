@@ -42,8 +42,6 @@ The metamodel on which criteria queries are based was already presented
 in <<a6072>>. The static metamodel classes which are used to construct
 strongly-typed criteria queries are described in <<a6933>>.
 
-=== Criteria API Interfaces [[a6997]]
-
 The complete criteria query API may be found in <<Criteria API Interfaces>>.
 
 === Criteria Query API Usage [[a10608]]
@@ -124,8 +122,8 @@ CriteriaQuery<Object> createQuery();
 Methods for the creation of update and delete
 queries are described in <<a11239>>.
 
-The methods <T> CriteriaQuery<T>
-createQuery(Class<T> resultClass) and `createTupleQuery` provide for
+The methods `<T> CriteriaQuery<T>
+createQuery(Class<T> resultClass)` and `createTupleQuery` provide for
 typing of criteria query results and for typesafe query execution using
 the `TypedQuery` API.
 
@@ -135,7 +133,7 @@ is semantically equivalent to invoking the `createQuery` method with the
 multiple selection items in a strongly typed manner. See <<a3868>> and
 <<a3949>>.
 
-The CriteriaQuery<Object> createQuery()
+The `CriteriaQuery<Object> createQuery()`
 method supports both the case where the `select` or `multiselect` method
 specifies only a single selection item and where the `multiselect`
 method specifies multiple selection items. If only a single item is

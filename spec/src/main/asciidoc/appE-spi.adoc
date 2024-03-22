@@ -1,7 +1,7 @@
 [appendix]
 == Persistence SPI Interfaces
 
-=== `ClassTransformer`
+=== `ClassTransformer` [[_classtransformer_]]
 [source,java]
 ----
 include::../../../../api/src/main/java/jakarta/persistence/spi/ClassTransformer.java[lines=18..-1]
@@ -13,7 +13,7 @@ include::../../../../api/src/main/java/jakarta/persistence/spi/ClassTransformer.
 include::../../../../api/src/main/java/jakarta/persistence/spi/LoadState.java[lines=18..-1]
 ----
 
-=== `PersistenceProvider`
+=== `PersistenceProvider` [[_persistenceprovider_]]
 [source,java]
 ----
 include::../../../../api/src/main/java/jakarta/persistence/spi/PersistenceProvider.java[lines=18..-1]
@@ -31,13 +31,13 @@ include::../../../../api/src/main/java/jakarta/persistence/spi/PersistenceProvid
 include::../../../../api/src/main/java/jakarta/persistence/spi/PersistenceProviderResolverHolder.java[lines=18..-1]
 ----
 
-=== `PersistenceUnitInfo`
+=== `PersistenceUnitInfo` [[_persistenceunitinfo_]]
 [source,java]
 ----
 include::../../../../api/src/main/java/jakarta/persistence/spi/PersistenceUnitInfo.java[lines=18..-1]
 ----
 
-=== `ProviderUtil`
+=== `ProviderUtil` [[_providerutil_]]
 [source,java]
 ----
 include::../../../../api/src/main/java/jakarta/persistence/spi/ProviderUtil.java[lines=18..-1]

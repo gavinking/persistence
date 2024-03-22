@@ -934,11 +934,7 @@ NONE may be specified as a value of lock mode arguments and also
 provides a default value for annotations.] The
 latter are to be preferred for new applications.
 
-[source,java]
-----
-include::../../../../api/src/main/java/jakarta/persistence/LockModeType.java[lines=18..-1]
-----
-
+This enum may be found in <<_lockmodetype_>>.
 
 ===== OPTIMISTIC, OPTIMISTIC_FORCE_INCREMENT [[a2100]]
 
@@ -980,8 +976,9 @@ required to support calling `lock(entity, LockModeType.OPTIMISTIC)` on
 a non-versioned object. When it cannot support such a lock call, it must
 throw the `PersistenceException`. When supported, whether for versioned
 or non-versioned objects, `LockModeType.OPTIMISTIC` must always prevent
-the phenomena P1 and P2. Applications that call `lock(entity,
-LockModeType.OPTIMISTIC)` on non-versioned objects will not be portable.
+the phenomena P1 and P2. Applications that call
+`lock(entity, LockModeType.OPTIMISTIC)` on non-versioned objects are not
+portable.
 
 If transaction T1 calls `lock(entity, LockModeType.OPTIMISTIC_FORCE_INCREMENT)`
 on a versioned object, the entity manager must avoid the phenomena P1 and P2
