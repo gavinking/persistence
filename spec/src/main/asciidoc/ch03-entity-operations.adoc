@@ -584,12 +584,7 @@ with injection or JNDI lookup). See <<a11791>>.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-public enum PersistenceContextType {
-    TRANSACTION,
-    EXTENDED
-}
+include::../../../../api/src/main/java/jakarta/persistence/PersistenceContextType.java[lines=18..-1]
 ----
 
 By default, the lifetime of the persistence
@@ -894,12 +889,7 @@ The values of the
 
 [source,java]
 ----
-package jakarta.persistence;
-
-public enum PessimisticLockScope {
-  NORMAL,
-  EXTENDED
-}
+include::../../../../api/src/main/java/jakarta/persistence/PessimisticLockScope.java[lines=18..-1]
 ----
 
 This specification does not define the
@@ -946,19 +936,9 @@ latter are to be preferred for new applications.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-public enum LockModeType {
-  READ,
-  WRITE,
-  OPTIMISTIC,
-  OPTIMISTIC_FORCE_INCREMENT,
-  PESSIMISTIC_READ,
-  PESSIMISTIC_WRITE,
-  PESSIMISTIC_FORCE_INCREMENT,
-  NONE
-}
+include::../../../../api/src/main/java/jakarta/persistence/LockModeType.java[lines=18..-1]
 ----
+
 
 ===== OPTIMISTIC, OPTIMISTIC_FORCE_INCREMENT [[a2100]]
 
@@ -2282,45 +2262,9 @@ other, more complex attribute types. See <<a13903>>.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-/**
- * A class that implements this interface can be used to convert
- * entity attribute state into database column representation
- * and back again.
- * Note that the X and Y types may be the same Java type.
- *
- * @param <X>  the type of the entity attribute
- * @param <Y>  the type of the database column
- */
-public interface AttributeConverter<X,Y> {
-
-    /**
-     * Converts the value stored in the entity attribute into the
-     * data representation to be stored in the database.
-     *
-     * @param attribute  the entity attribute value to be converted
-     * @return  the converted data to be stored in the database
-     *          column
-     */
-    public Y convertToDatabaseColumn (X attribute);
-
-    /**
-     * Converts the data stored in the database column into the
-     * value to be stored in the entity attribute.
-     * Note that it is the responsibility of the converter writer to
-     * specify the correct <code>dbData</code> type for the corresponding
-     * column for use by the JDBC driver: i.e., persistence providers are
-     * not expected to do such type conversion.
-     *
-     * @param dbData  the data from the database column to be
-     *                converted
-     * @return  the converted value to be stored in the entity
-     *          attribute
-     */
-    public X convertToEntityAttribute (Y dbData);
-}
+include::../../../../api/src/main/java/jakarta/persistence/AttributeConverter.java[lines=18..-1]
 ----
+
 
 Attribute converter classes in Jakarta EE
 environments support dependency injection through the Contexts and
@@ -2537,31 +2481,9 @@ specification. The semantics of each mode is defined by its Javadoc.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-/**
- * Used as the value of the
- * <code>jakarta.persistence.cache.retrieveMode</code> property to
- * specify the behavior when data is retrieved by the
- * <code>find</code> methods and by queries.
- *
- * @since 2.0
- */
-public enum CacheRetrieveMode {
-
-    /**
-     * Read entity data from the cache: this is
-     * the default behavior.
-     */
-    USE,
-
-    /**
-     * Bypass the cache: get data directly from
-     * the database.
-     */
-    BYPASS
-}
+include::../../../../api/src/main/java/jakarta/persistence/CacheRetrieveMode.java[lines=18..-1]
 ----
+
 
 `CacheStoreMode` enumerates the cache store modes recognized by this
 specification. The semantics of each mode is defined by its Javadoc.
@@ -2569,38 +2491,7 @@ specification. The semantics of each mode is defined by its Javadoc.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-/**
- * Used as the value of the
- * <code>jakarta.persistence.cache.storeMode</code> property to specify
- * the behavior when data is read from the database and when data is
- * committed into the database.
- *
- * @since 2.0
- */
-public enum CacheStoreMode {
-
-    /**
-     * Insert entity data into cache when read from database
-     * and insert/update entity data when committed into database:
-     * this is the default behavior. Does not force refresh
-     * of already cached items when reading from database.
-     */
-    USE,
-
-    /**
-     * Don't insert into cache.
-     */
-    BYPASS,
-
-    /**
-     * Insert/update entity data into cache when read
-     * from database and when committed into database.
-     * Forces refresh of cache for items read from database.
-     */
-    REFRESH
-}
+include::../../../../api/src/main/java/jakarta/persistence/CacheStoreMode.java[lines=18..-1]
 ----
 
 ==== Cache Interface [[a12124]]
@@ -2748,22 +2639,9 @@ flush to the database regardless of the flush mode setting.
 
 [source,java]
 ----
-package jakarta.persistence;
-
-public enum FlushModeType {
-
-    /**
-     * Flushing to occur at transaction commit.  The provider may flush
-     * at other times, but is not required to.
-     */
-    COMMIT,
-
-    /**
-     * (Default) Flushing to occur at query execution.
-     */
-    AUTO
-}
+include::../../../../api/src/main/java/jakarta/persistence/FlushModeType.java[lines=18..-1]
 ----
+
 
 If there is no transaction active, the
 persistence provider must not flush to the database.
