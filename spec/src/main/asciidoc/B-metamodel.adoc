@@ -1,0 +1,88 @@
+[appendix]
+== Metamodel API Interfaces
+
+=== `Metamodel`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/Metamodel.java[]
+----
+=== `StaticMetamodel`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/StaticMetamodel.java[]
+----
+=== `Attribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/Attribute.java[]
+----
+=== `BasicType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/BasicType.java[]
+----
+=== `Bindable`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/Bindable.java[]
+----
+=== `CollectionAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/CollectionAttribute.java[]
+----
+=== `EmbeddableType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/EmbeddableType.java[]
+----
+=== `EntityType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/EntityType.java[]
+----
+=== `IdentifiableType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/IdentifiableType.java[]
+----
+=== `ListAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/ListAttribute.java[]
+----
+=== `ManagedType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/ManagedType.java[]
+----
+=== `MapAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/MapAttribute.java[]
+----
+=== `MappedSuperclassType`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/MappedSuperclassType.java[]
+----
+=== `PluralAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/PluralAttribute.java[]
+----
+=== `SetAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/SetAttribute.java[]
+----
+=== `SingularAttribute`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/SingularAttribute.java[]
+----
+=== `Type`
+[source,java]
+----
+include::../../../../api/src/main/java/jakarta/persistence/metamodel/Type.java[]
+----
