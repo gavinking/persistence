@@ -489,9 +489,8 @@ approach as defined by the Bean Validation specification
 
 ==== jakarta.persistence.spi.PersistenceProvider
 
-The interface
-`jakarta.persistence.spi.PersistenceProvider` must be implemented by the
-persistence provider.
+The `PersistenceProvider` interface may be found in <<_persistenceprovider_>>.
+This interface must be implemented by the persistence provider.
 
 It is invoked by the container in Jakarta EE
 environments and by the `jakarta.persistence.Persistence` class in Java SE
@@ -501,35 +500,31 @@ implementation is not intended to be used by the application.
 The `PersistenceProvider` implementation
 class must have a public no-arg constructor.
 
-This interface may be found in <<_persistenceprovider_>>.
-
 The properties used in the
 `createEntityManagerFactory` method in Java SE environments are
 described further in <<a13443>> below.
 
 ==== jakarta.persistence.spi.ProviderUtil
 
+The `ProviderUtil` interface may be found in <<_providerutil_>>.
+
 The `ProviderUtil` interface is invoked by
 the `PersistenceUtil` implementation to determine the load status of an
 entity or entity attribute. It is not intended to be invoked by the
 application.
 
-This interface may be found in <<_providerutil_>>.
-
 === jakarta.persistence.spi.PersistenceUnitInfo Interface [[a13160]]
 
-This interface may be found in <<_persistenceunitinfo_>>.
+The `PersistenceUnitInfo` interface may be found in <<_persistenceunitinfo_>>.
 
-The enum
-`jakarta.persistence.spi.PersistenceUnitTransactionType` defines whether
-the entity managers created by the factory will be JTA or resource-local
-entity managers.
+The enum `jakarta.persistence.spi.PersistenceUnitTransactionType`
+defines whether the entity managers created by the factory will be
+JTA or resource-local entity managers. This enum is deprecated.
 
 [source,java]
 ----
 include::../../../../api/src/main/java/jakarta/persistence/spi/PersistenceUnitTransactionType.java[lines=18..-1]
 ----
-
 
 The enum `jakarta.persistence.SharedCacheMode`
 defines the use of caching. The `persistence.xml` `shared-cache-mode`
@@ -552,15 +547,18 @@ include::../../../../api/src/main/java/jakarta/persistence/ValidationMode.java[l
 
 ==== jakarta.persistence.spi.ClassTransformer Interface
 
-The `jakarta.persistence.spi.ClassTransformer`
+The `ClassTransformer` interface may be found in <<_classtransformer_>>.
+
+The `ClassTransformer`
 interface is implemented by a persistence provider that wants to
 transform entities and managed classes at class load time or at class
 redefinition time. Implementation of this interface by a persistence
 provider is optional.
 
-This interface may be found in <<_classtransformer_>>.
 
 === jakarta.persistence.Persistence Class [[a13443]]
+
+The `Persistence` class may be found in <<_persistence_>>.
 
 The `Persistence` class is used to obtain an `EntityManagerFactory` instance
 in Java SE environments. It may also be used for schema generation—i.e., to
@@ -572,8 +570,6 @@ environments.
 
 The `Persistence` class is used to obtain a `PersistenceUtil` instance in both
 Jakarta EE and Java SE environments.
-
-This interface may be found in <<_persistence_>>.
 
 The `properties` argument passed to the `createEntityManagerFactory`
 method is used to specify both standard and vendor-specific properties
@@ -754,11 +750,11 @@ options the provider does not recognize, it should ignore those options.
 
 === PersistenceUtil Interface
 
+The `PersistenceUtil` interface may be found in <<_persistenceutil_>>.
+
 This interface is used to determine load
 state. The semantics of the methods of this interface are defined in
 <<a13592>> below.
-
-This interface may be found in <<_persistenceutil_>>.
 
 ==== Contracts for Determining the Load State of an Entity or Entity Attribute [[a13592]]
 
