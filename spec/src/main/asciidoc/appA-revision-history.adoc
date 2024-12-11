@@ -7,6 +7,9 @@
 
 This appendix lists the significant changes that have been made during the development of the Jakarta Persistence specification.
 
+=== Jakarta Persistence 4.0
+
+
 === Jakarta Persistence 3.2
 
 Added support for Java record types as embeddable classes
@@ -15,7 +18,7 @@ Added support for `java.time.Instant` and `java.time.Year` and clarified JDBC ma
 
 Added `union`, `intersect`, `except`, `cast`, `left`, `right`, and `replace` for Jakarta Persistence QL and criteria queries
 
-Added `||` string concatenation operator to Jakarta Persistence QL
+Added `||` string concatenation operator and `id` and `version` functions to Jakarta Persistence QL
 
 Added `CriteriaSelect` to the Criteria API
 
@@ -83,12 +86,16 @@ Added `comment` and `check` members to `@Table` and `@Column` annotations, along
 
 Added `secondPrecision` to `@Column` annotation and clarified semantics of `@Column` members
 
-Added factory-level access to named queries and named entity graphs
+Added factory-level access to named queries and named entity graphs, along with `TypedQueryReference`
 
 Added integration points for dependency injection
 
+Allowed scalar expressions in the `ORDER BY` clause in Jakarta Persistence QL
+
 Made the `name` member of `TableGenerator` and `SequenceGenerator` optional and allow usage of these annotations
 at the java package level
+
+Made identification variables and the `SELECT` clause in Jakarta Persistence QL optional
 
 Clarified the primary key types supported for each `GenerationType`
 
@@ -137,7 +144,7 @@ Deprecated `multiselect` methods in `CriteriaQuery`. The preference is to use `a
 
 Deprecated `addSubclassSubgraph()` in `EntityGraph` for removal; `addTreatedSubgraph()` method should be used as direct replacement
 
-Deprecated _addSubgraph(Attribute, Class)_ and `addKeySubgraph()` in `Graph`/`EntityGraph`/`SubGraph` for removal; `addTreatedSubgraph(Attribute, Class)`
+Deprecated `addSubgraph(Attribute, Class)` and `addKeySubgraph()` in `Graph`/`EntityGraph`/`SubGraph` for removal; `addTreatedSubgraph(Attribute, Class)`
 and `addMapKeySubgraph()` methods should be used as direct replacements
 
 Deprecated `jakarta.persistence.spi.PersistenceUnitTransactionType` for removal; `jakarta.persistence.PersistenceUnitTransactionType`
