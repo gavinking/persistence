@@ -816,10 +816,11 @@ this case `PersistenceUtil.isLoaded` returns `true`.
 If the `PersistenceUtil` implementation
 determines that only a single provider is available in the environment,
 it is permitted to use provider-specific methods to determine the result
-of `isLoaded(Object)` as long as the semantics defined in <<a2019>> are observed.
+of `isLoaded(Object)` as long as the semantics defined in <<load-state>>
+are observed.
 
 The implementation of the
-_PersistenceUtil.isLoaded(Object,String)_ method must determine the list
+`PersistenceUtil.isLoaded(Object,String)` method must determine the list
 of persistence providers available in the environment and call the
 `ProviderUtil.isLoadedWithoutReference` method on each of them until
 either:
@@ -841,8 +842,8 @@ this case, `PersistenceUtil.isLoaded` returns `true`.
 If the `PersistenceUtil` implementation
 determines that only a single provider is available in the environment,
 it is permitted to use provider specific methods to determine the result
-of _isLoaded(Object, String)_ as long as the semantics defined in
-<<a2019>> are observed.
+of `isLoaded(Object, String)` as long as the semantics defined in
+<<load-state>> are observed.
 
 NOTE: The rationale for splitting the
 determination of load state between the methods isLoadedWithoutReference

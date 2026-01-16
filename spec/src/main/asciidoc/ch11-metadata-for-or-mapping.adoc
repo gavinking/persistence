@@ -561,7 +561,7 @@ public EmploymentPeriod getEmploymentPeriod() { ... }
 
 The `Basic` annotation is the simplest type of mapping to a database column.
 The `Basic` annotation may be applied to any persistent property or instance
-variable whose type is one of the basic types listed in <<a486>>.
+variable whose type is one of the basic types listed in <<basic-types>>.
 
 For the types listed above, the persistence provider must support mappings
 to the column types listed in tables B-2 and B-4 of Appendix B of the
@@ -575,7 +575,7 @@ support mapping:
 - `char[]` to the JDBC `CHAR`, `NCHAR`, `VARCHAR`, `NVARCHAR`, `LONGVARCHAR`,
 and `LONGNVARCHAR` types.
 
-As described in <<a511>>, the use of the `Basic`
+As described in <<attribute-mapping-defaults>>, the use of the `Basic`
 annotation is optional for persistent fields and properties of the
 types listed above. If the `Basic` annotation is not specified for such a field or
 property, the default values of the `Basic` annotation will apply.
@@ -1622,8 +1622,8 @@ public class ValuedCustomer extends Customer { ... }
 ==== ElementCollection Annotation
 
 The `ElementCollection` annotation declares an element collection, as
-defined in <<a494>>. The elements of the collection must be instances
-of a basic type or embeddable class.
+defined in <<element-collection>>. The elements of the collection must
+be instances of a basic type or embeddable class.
 
 The `ElementCollection` annotation (or equivalent XML element) must be
 explicitly specified if such a collection maps to a collection
@@ -1686,8 +1686,8 @@ persistence provider runtime.
 ==== Embeddable Annotation [[a14634]]
 
 The `Embeddable` annotation declares that the annotated class is an
-embeddable class, as defined in <<a487>>, whose instances are stored
-as an intrinsic part of an owning entity and share the persistent
+embeddable class, as defined in <<embeddable>>, whose instances are
+stored as an intrinsic part of an owning entity and share the persistent
 identity of the owning entity.
 
 [source,java]
@@ -1807,12 +1807,12 @@ public EmploymentPeriod getEmploymentPeriod() { ... }
 
 The `EmbeddedId` annotation identifies a persistent field or property of
 an entity class or mapped superclass as holding a composite primary key
-represented as an embeddable class, as defined in <<a132>>. The embeddable
-class must be annotated as `Embeddable`.footnote:[The `Id` annotation is
-not applied to any field or property of the embeddable class.]
+represented as an embeddable class, as defined in <<identity>>. The
+embeddable class must be annotated as `Embeddable`.footnote:[The `Id`
+annotation is not applied to any field or property of the embeddable class.]
 
 An embedded id class must not declare a field or property representing a
-relationship, in the sense of <<a516>>, with another entity.
+relationship, in the sense of <<relationships>>, with another entity.
 
 In a given entity class:
 
@@ -1824,7 +1824,7 @@ The `AttributeOverride` annotation may be used to override the column
 mappings declared within the embeddable class.
 
 The `MapsId` annotation may be used in conjunction with the `EmbeddedId`
-annotation to specify a derived primary key, as defined in <<a149>>.
+annotation to specify a derived primary key, as defined in <<derived-identity>>.
 
 If an entity has a derived primary key, the`AttributeOverride` annotation
 may only be used to override those attributes of the embedded id that do
@@ -2246,7 +2246,7 @@ The `Id` annotation may be applied to a property or field of:
   entity hierarchy.
 
 The field or property to which the `Id` annotation is applied should have
-one of the legal simple primary key types listed in <<a132>>.footnote:[A
+one of the legal simple primary key types listed in <<identity>>.footnote:[A
 primary key with a type not listed is not portable.]footnote:[In general,
 floating point types should never be used in primary keys.]
 
@@ -2276,18 +2276,18 @@ The `IdClass` annotation specifies a composite primary key class, as
 defined in <<composite-primary-keys>>, for the annotated entity class
 or mapped superclass. The `IdClass` annotation is used when--and only
 when--the primary key encompasses multiple fields or properties of the
-entity, as specified by <<a132>>. If a composite primary key is mapped
-by an `EmbeddedId`, the `IdClass` annotation must not be applied to the
-entity class.
+entity, as specified by <<identity>>. If a composite primary key is
+mapped by an `EmbeddedId`, the `IdClass` annotation must not be applied
+to the entity class.
 
 When a composite primary key class is specified via `IdClass`:
 
 - The `Id` annotation must be applied to the primary key fields or
   properties of the entity class, and
-- the names of the fields or properties in the primary key class and the
-  primary key fields or properties of the entity must correspond, and
-  their types must match according to the rules specified in <<a132>> and
-  <<a149>>.
+- the names of the fields or properties in the primary key class and
+  the primary key fields or properties of the entity must correspond,
+  and their types must match according to the rules specified in
+  <<identity>> and <<derived-identity>>.
 
 [source,java]
 ----
@@ -3997,7 +3997,7 @@ relationship attribute that provides the mapping for:
 - an attribute within an `EmbeddedId` primary key, or
 - a simple primary key of the parent entity,
 
-as defined in <<a149>> and <<a155>>.
+as defined in <<derived-identity>> and <<derived-identity-specification>>.
 
 The `value` element listed in <<a15615>> specifies the attribute within a
 composite key class to which the relationship attribute corresponds. If
@@ -5713,9 +5713,9 @@ public class Employee { ... }
 ==== Version Annotation [[a16432]]
 
 The `Version` annotation declares the version field or property of an
-entity class, as defined in <<a2060>>. The version is used to ensure
+entity class, as defined in <<version>>. The version is used to ensure
 integrity when performing the merge operation, and for optimistic
-concurrency control, as specified in <<a2059>>.
+concurrency control, as specified in <<optimistic-version>>.
 
 The `Version` field or property should be mapped to the primary table
 of the entity; an application which maps the `Version` property to a
@@ -5846,9 +5846,9 @@ of collection tables. The `Column`, `AttributeOverride`, and
 
 By default, join tables are created for the
 mapping of many-to-many relationships and unidirectional one-to-many
-relationships. See <<a708>>, <<a764>>, and
-<<a800>> for the defaults that apply in such cases. Join tables may also be used
-to map bidirectional many-to-one/one-to-many associations,
+relationships. See <<bidirectional-relationships>>, <<a764>>, and
+<<a800>> for the defaults that apply in such cases. Join tables may also
+be used to map bidirectional many-to-one/one-to-many associations,
 unidirectional many-to-one relationships, and one-to-one relationships
 (both bidirectional and unidirectional). See <<a15022>> for the rules that
 apply to the generation of join tables. The `AssociationOverride`
@@ -5992,7 +5992,7 @@ in conjunction with the `IdClass` annotation) declares
 attributes whose database columns correspond to a primary key. Use of
 the `Id` annotation results in the creation of a primary key consisting
 of the corresponding column or columns. Rules for the `Id` annotation
-are described in <<a14827>> and <<a132>>.
+are described in <<a14827>> and <<identity>>.
 
 The `Column` annotation may be used to
 further control the column mapping for an `Id` attribute that is applied
@@ -6012,7 +6012,7 @@ The `EmbeddedId` annotation specifies an
 embedded attribute whose corresponding columns correspond to a database
 primary key. Use of the `EmbeddedId` annotation results in the creation
 of a primary key consisting of the corresponding columns. Rules for the
-`EmbeddedId` annotation are described in <<a14687>> and <<a132>>.
+`EmbeddedId` annotation are described in <<a14687>> and <<identity>>.
 
 The `Column` annotation may be used to
 control the column mapping for an embeddable class. If the `EmbeddedId`
@@ -6022,7 +6022,7 @@ annotation may be used to control the column mappings.
 If an `EmbeddedId` attribute corresponds to a
 relationship attribute, the `MapsId` annotation must be used, and the
 column mapping is determined by the join column for the relationship.
-See <<a149>>.
+See <<derived-identity>>.
 
 ===== GeneratedValue
 
@@ -6058,7 +6058,8 @@ annotation are used in schema generation:
 * `foreignKey`
 
 See <<a14922>> for rules that apply to these elements and join
-column creation, and sections <<a538>> and <<a14250>> for the rules that apply for the default
+column creation, and sections <<relationship-mapping-defaults>> and
+<<a14250>> for the rules that apply for the default
 mappings of foreign keys for relationships and element collections. The
 `AssociationOverride` annotation may be used to override relationship
 mappings. The `PrimaryKeyJoinColumn` annotation is used to join

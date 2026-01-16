@@ -16,7 +16,7 @@ are used to represent the state of the entity.
 
 This chapter describes requirements on entity classes and instances.
 
-=== The Entity Class [[a18]]
+=== The Entity Class [[entity]]
 
 The entity class must be annotated with the `Entity` annotation or
 declared as an `entity` in its XML descriptor.
@@ -52,7 +52,7 @@ directly accessed by a client of the entity. The state of the entity is
 available to clients only through the methods of the entity--that is,
 via accessor (getter/setter) methods, or via other business methods.
 
-=== Persistent Fields and Properties [[a19]]
+=== Persistent Fields and Properties [[attributes]]
 
 The persistent state of an entity is accessed by the persistence provider
 runtime via either:
@@ -67,10 +67,13 @@ or `protected`.
 
 The type of a persistent field or property of an entity class may be:
 
-- any basic type listed below in <<a486>>, including any Java `enum` type,
-- an entity type or a collection of some entity type, as specified in <<a516>>,
-- an embeddable class, as defined in <<a487>>, or
-- a collection of a basic type or embeddable type, as specified in <<a494>>.
+- any basic type listed below in <<basic-types>>, including any Java
+  `enum` type,
+- an entity type or a collection of some entity type, as specified in
+  <<relationships>>,
+- an embeddable class, as defined in <<embeddable>>, or
+- a collection of a basic type or embeddable type, as specified in
+  <<element-collection>>.
 
 Object/relational mapping metadata may be specified to customize the
 object/relational mapping and the loading and storing of the entity state
@@ -95,7 +98,7 @@ Mapping annotations must not be applied to a field or property marked `static`,
 
 Whether property access, field access, or a mix of the two options is used by
 the provider to access the persistent state of a given entity class or entity
-hierarchy is determined by the rules defined in <<a113>>.
+hierarchy is determined by the rules defined in <<access>>.
 
 [NOTE]
 Terminology Note: The persistent fields and properties of an entity class
@@ -135,16 +138,17 @@ same interface type.
 
 Every persistent field or property of an entity is either:
 
-- an attribute of **basic type**, as defined in <<a486>>, or of a type
-  converted to a basic type through use of a _converter_, as defined
-  in <<a2999>>,
+- an attribute of **basic type**, as defined in <<basic-types>>, or
+  of a type converted to a basic type through use of a _converter_,
+  as defined in <<a2999>>,
 - an **embedded attribute** whose type is a fine-grained embeddable
-  class, as defined <<a487>>,
+  class, as defined <<embeddable>>,
 - an **element collection**, that is, a collection whose elements are
-  instances of a basic type or embeddable class, as defined in <<a494>>,
-- a **relationship** (or **association**) with another entity type, as
-  defined in <<a516>>, which is further classified by its multiplicity:
-  one-to-one, many-to-one, one-to-many, or many-to-many.
+  instances of a basic type or embeddable class, as defined in
+  <<element-collection>>,
+- a **relationship** (or **association**) with another entity type,
+  as defined in <<relationships>>, which is further classified by its
+  multiplicity: one-to-one, many-to-one, one-to-many, or many-to-many.
 
 The enumeration
 `jakarta.persistence.metamodel.Attribute.PersistentAttributeType`
@@ -166,8 +170,8 @@ listed types.
   `@ManyToMany` is an association of the indicated multiplicity.
 
 If none of the above annotations occur on a persistent attribute,
-the defaulting rules specified below in <<a511>> determine which
-category it belongs to.
+the defaulting rules specified below in <<attribute-mapping-defaults>>
+determine which category it belongs to.
 
 An attribute of an entity must not have mapping annotations
 indicating conflicting persistent attribute types. For example, a
@@ -224,7 +228,6 @@ represents the state of an entity and attributes which hold
 references to the entity. Thus, object identity might still not
 be respected in a strict sense, not even for a reference type.
 
-
 ==== Property Access
 
 When property access is used, persistent properties of the entity class
@@ -249,7 +252,7 @@ void setProperty(T t)
 
 For collection-valued persistent properties, the type `T` in the method
 signatures above must be one of the collection interface types listed
-above in <<a19>>.
+above in <<attributes>>.
 
 In addition to returning and setting the persistent state of the entity
 instance, a property accessor method may contain additional logic, for
@@ -350,12 +353,12 @@ public class Customer implements Serializable {
 }
 ----
 
-=== Access Type [[a113]]
+=== Access Type [[access]]
 
 An _access type_ determines how the persistence provider runtime reads
 and writes the persistent state of an entity from and to an instance of
-the entity class, as specified above in <<a19>>.
-`AccessType` enumerates the two possibilities:
+the entity class, as specified above in <<attributes>>. `AccessType`
+enumerates the two possibilities:
 
 [source,java]
 ----
@@ -387,7 +390,7 @@ An access type may be explicitly specified by means of the `Access`
 annotationfootnote:[The use of XML as an alternative and the interaction
 between Java language annotations and XML elements in defining default
 and explicit access types is described in <<a16944>>.], as described
-below in <<a122>>.
+below in <<explicit-access>>.
 
 Every class in an entity hierarchy whose access type is defaulted in this
 way must be consistent in its placement of mapping annotations on either
@@ -407,7 +410,7 @@ Therefore, an attribute-level `Access` annotation may not be used to
 selectively override the access type of an attribute of an entity class
 with a defaulted access type.]
 
-==== Explicit Access Type [[a122]]
+==== Explicit Access Type [[explicit-access]]
 
 The access type of an individual entity class, mapped superclass, or
 embeddable class may be specified for that class, independent of the
@@ -503,7 +506,7 @@ embedded (including as a member of an element collection) independent of
 whether the access type of the containing class is explicitly specified or
 defaulted. A different access type for an embeddable class can be specified
 for that embeddable class by means of the `Access` annotation as described
-above in <<a122>>.
+above in <<explicit-access>>.
 
 ==== Defaulted Access Types of Embeddable Classes and Mapped Superclasses
 
@@ -518,12 +521,12 @@ embeddable class violates this principle, and if it is used in contexts of
 non-uniform access type, the representation of the embeddable class in the
 metamodel API defined in <<a6072>> is undefined and unportable.
 
-=== Primary Keys and Entity Identity [[a132]]
+=== Primary Keys and Entity Identity [[identity]]
 
 Every entity must have a primary key. The value of its primary key uniquely
 identifies an entity instance within a persistence context and to operations
-of the `EntityManager` or `EntityAgent`, as described in <<a1060>>, and
-represents the _persistent identity_ of the instance.
+of the `EntityManager` or `EntityAgent`, as described in <<entity-operations>>,
+and represents the _persistent identity_ of the instance.
 
 The primary key must be declared by:
 
@@ -578,7 +581,7 @@ defined by <<a16361>>, or by equivalent XML.
 If the primary key is a composite primary key derived from the primary
 key of another entity, the primary key may contain an attribute whose
 type is that of the primary key of the referenced entity, as specified
-below in <<a149>>.
+below in <<derived-identity>>.
 
 An entity with a primary key involving any type other than the types
 listed above is not portable. If the primary key is generated by the
@@ -606,15 +609,16 @@ The following rules apply to composite primary keys:
 
 - The access type (`FIELD` or `PROPERTY`) of a primary key class is
   determined by the access type of the entity for which it is the primary
-  key, unless the primary key is an embedded id and an explicit access type
-  is specified using the `Access` annotation, as defined in <<a122>>.
+  key, unless the primary key is an embedded id and an explicit access
+  type is specified using the `Access` annotation, as defined in
+  <<explicit-access>>.
 
 - If property-based access is used, the property accessors of the primary
   key class must be `public` or `protected`.
 
 - The primary key class must define `equals` and `hashCode` methods. The
-  semantics of value equality for these methods must be consistent with the
-  database equality for the database types to which the key is mapped.
+  semantics of value equality for these methods must be consistent with
+  the database equality for the database types to which the key is mapped.
 
 - A composite primary key must either be represented and mapped as an
   embeddable class (see <<a14687>>) or it must be represented as an id
@@ -628,9 +632,9 @@ The following rules apply to composite primary keys:
   derived identity.
 
 - A primary key which involves a derived identity must conform to the
-  rules specified below in <<a149>>.
+  rules specified below in <<derived-identity>>.
 
-==== Primary Keys Involving Derived Identities [[a149]]
+==== Primary Keys Involving Derived Identities [[derived-identity]]
 
 The identity of an entity is said to be partially _derived_ from the
 identity of a second entity when the _child_ or _dependent_ first entity
@@ -639,8 +643,8 @@ the _parent_ second entity and the foreign key referencing the parent
 entity forms part of the primary key of the dependent entity.
 
 A derived identity might be represented as a simple primary key or as a
-composite primary key, as described in <<a155>> below. The dependent
-entity class has a composite primary key if
+composite primary key, as described in <<derived-identity-specification>>
+below. The dependent entity class has a composite primary key if
 
 - it declares one or more primary key attributes in addition to those
   corresponding to the primary key of the parent, or
@@ -671,7 +675,7 @@ to the database.]
 
 A dependent entity may have more than one parent entity.
 
-===== Specification of Derived Identities [[a155]]
+===== Specification of Derived Identities [[derived-identity-specification]]
 
 If a dependent entity uses an id class to represent its primary key,
 one of the two following rules must be observed:
@@ -742,9 +746,9 @@ entity.
 - Any primary key attribute of a dependent entity which is derived from the
   identity of a parent entity is mapped by annotations of the corresponding
   `ManyToOne` or `OneToOne` relationship attribute. The default mapping for
-  this relationship is specified in <<a538>>. The default mapping may be
-  overridden by annotating the relationship attribute with the `JoinColumn`
-  or `JoinColumns` annotation.
+  this relationship is specified in <<relationship-mapping-defaults>>. The
+  default mapping may be overridden by annotating the relationship attribute
+  with the `JoinColumn` or `JoinColumns` annotation.
 
 - If the dependent entity uses an id class, the `Column` annotation may be
   used to override the default mapping of `Id` attributes which are `not`
@@ -1298,17 +1302,17 @@ public class MedicalHistory {
 }
 ----
 
-=== Entity Versions [[a2060]]
+=== Entity Versions [[version]]
 
-An entity might have a _version_, a persistent field or property used by
-the persistence provider to perform _optimistic lock verification_, as
-specified in <<a2059>>. The version field or property holds a version number
-or timestamp identifying the revision of the entity data held by an entity
-class instance. In the course of performing lifecycle operations involving
-the entity instance, the persistence provider gets and sets the version
-field or property of the entity instance to determine or modify its version
-number or timestamp. The `Version` annotation defined in <<a16432>> or
-`version` XML element must be used to explicitly identify the version field
+An entity might have a _version_, a persistent field or property used by the
+persistence provider to perform _optimistic lock verification_, as specified
+in <<optimistic-version>>. The version field or property holds a version
+number or timestamp identifying the revision of the entity data held by an
+entity class instance. In the course of performing lifecycle operations
+involving the entity instance, the persistence provider gets and sets the
+version field or property of the entity instance to determine or modify its
+version number or timestamp. The `Version` annotation defined in <<a16432>>
+or`version` XML element must be used to explicitly identify the version field
 or property of an entity.
 
 An entity class may access the state of its version field or property or
@@ -1339,7 +1343,7 @@ hierarchy, or by one of its mapped superclasses. A portable application
 must not declare a version field or property in a subclass of the root
 class of an entity class hierarchy.
 
-=== Basic Types [[a486]]
+=== Basic Types [[basic-types]]
 
 The following Java types are considered _basic types_:
 
@@ -1364,7 +1368,7 @@ The following Java types are considered _basic types_:
 
 Persistence for basic types is defined in <<a14205>> and <<a14719>>.
 
-=== Embeddable Classes [[a487]]
+=== Embeddable Classes [[embeddable]]
 
 An _embeddable class_ is a fine-grained class that represents part of
 the state of an entity. An instance of an embeddable class, unlike an
@@ -1392,11 +1396,11 @@ the database.
 
 An embeddable class must be annotated as `Embeddable` or designated as
 `embeddable` in its XML descriptor. The access type for an embedded
-object is determined as described in <<a113>>.
+object is determined as described in <<access>>.
 
 An embeddable class may be a regular Java class that adheres to the
-requirements specified in <<a18>> for entities, with the exception that
-an embeddable class is not annotated as `Entity`, and an embeddable
+requirements specified in <<entity>> for entities, with the exception
+that an embeddable class is not annotated as `Entity`, and an embeddable
 class must not be `abstract`.
 
 Alternatively, an embeddable class may be a Java record type.
@@ -1423,20 +1427,21 @@ collections, and associations:
   embedded id or as a map key must not declare such a relationship.
 
 Additional requirements and restrictions on embeddable classes are described
-in <<a494>>.
+in <<element-collection>>.
 
-=== Collections of Embeddable Classes and Basic Types [[a494]]
+=== Collections of Embeddable Classes and Basic Types [[element-collection]]
 
-An _element collection_ is a persistent field or property of an entity
-or embeddable class that is collection-valued, and whose elements are
-of a basic type, as specified above in <<a486>>, or of an embeddable
-class, as specified immediately above in <<a487>>.
+An _element collection_ is a persistent field or property of an
+entity or embeddable class that is collection-valued, and whose
+elements are of a basic type, as specified above in <<basic-types>>,
+or of an embeddable class, as specified immediately above in
+<<embeddable>>.
 
 An element collection must be explicitly declared as such by the
 `ElementCollection` annotation or `element-collection` XML element.
 If the `ElementCollection` annotation (or XML equivalent) is not
 specified for a collection-valued field or property, the rules of
-<<a511>> apply.
+<<attribute-mapping-defaults>> apply.
 
 An element collection must have declared type `java.util.Collection`,
 `java.util.Set`, `java.util.List`, or `java.util.Map`. Collections of
@@ -1464,7 +1469,7 @@ indirectly, within an element collection:
   an entity;
 - but it may have a many-to-one or one-to-one association to an
   entity if the relationship is represented by a foreign key
-  mapping, as defined in <<a516>>.
+  mapping, as defined in <<relationships>>.
 
 === Map Collections [[map-collections]]
 
@@ -1519,7 +1524,7 @@ When the value type of a map is an entity type:
   one-to-many/many-to-one relationship, then, by default, the map maps
   to the primary table of the value entity type.
 
-In this case, default mappings are described in <<a538>>.
+In this case, default mappings are described in <<relationship-mapping-defaults>>.
 
 ==== Map Keys
 
@@ -1566,7 +1571,7 @@ instance is used as a map key, these attributes represent its
 identity. Modification of an embeddable instance used as a map key
 has undefined semantics and should be avoided.].
 
-=== Mapping Defaults for Non-Relationship Fields or Properties [[a511]]
+=== Mapping Defaults for Non-Relationship Fields or Properties [[attribute-mapping-defaults]]
 
 If a persistent field or property other than a relationship property
 is _not_ annotated with one of the mapping annotations listed above in
@@ -1579,14 +1584,14 @@ the following defaulting rules are applied in order:
    were annotated with the `Embedded` annotation, as defined in <<a14634>>
    and <<a14672>>.
 2. Otherwise, if the type of the field or property is one of the basic
-   types listed in <<a486>>, it is treated as if it were annotated as
+   types listed in <<basic-types>>, it is treated as if it were annotated as
    `Basic`, as defined in <<a14205>>, <<a14719>>, <<a15087>>, and <<a16361>>.
 
 If no annotation is present and neither of the above rules is applicable,
 the behavior is undefined. A persistence provider might report an error
 when the persistence unit is initialized.
 
-=== Entity Relationships [[a516]]
+=== Entity Relationships [[relationships]]
 
 Every relationship (or association) between two entity types has
 well-defined _multiplicity_, either:
@@ -1617,7 +1622,7 @@ These annotations mirror common practice in relational database schema
 modeling. The use of the relationship modeling annotations allows the
 object/relationship mapping of associations to the relational database
 schema to be fully defaulted, to provide an ease-of-development facility.
-This is described in <<a538>>.
+This is described in <<relationship-mapping-defaults>>.
 
 For an attribute annotated `OneToOne` or `ManyToOne`, the declared
 type of the attribute is taken to be the associated entity type. If
@@ -1684,10 +1689,11 @@ This specification recognizes two basic strategies for mapping an association:
 - In a _join table mapping_, the relationship is mapped to a dedicated
   intermediate join table that represents the association itself.
 
-<<a538>> specifies default mappings for entity relationships. These defaulted
-mappings may be customized through the use of mapping annotations or via an XML
-descriptor. Furthermore, this specification requires support for the following
-additional mapping strategies:
+<<relationship-mapping-defaults>> specifies default mappings for entity
+relationships. These defaulted mappings may be customized through the
+use of mapping annotations or via an XML descriptor. Furthermore, this
+specification requires support for the following additional mapping
+strategies:
 
 * A unidirectional one-to-many relationship may be mapped to a foreign key
   column of the primary table of the target entity. The `JoinColumn`
@@ -1730,17 +1736,17 @@ when loading an entity from the database.
 
 The `cascade` member of a relationship modeling annotation specifies a list
 of persistence operations which should be cascaded to the associated entity,
-as specified later in <<a1929>>. An attribute annotated `ManyToOne` or
+as specified later in <<lifecycle>>. An attribute annotated `ManyToOne` or
 `ManyToMany` must not specify `REMOVE` among its cascaded operation types.
 An application which specifies `cascade=REMOVE` for a `ManyToOne` or
 `ManyToMany` associations is not portable.
 
-=== Relationship Mapping Defaults [[a538]]
+=== Relationship Mapping Defaults [[relationship-mapping-defaults]]
 
 This section defines the mapping defaults that apply to entity associations
-declared using the relationship modeling annotations defined above in <<a516>>.
-These mapping defaults also apply when the XML descriptor is used to declare
-a relationship.
+declared using the relationship modeling annotations defined above in
+<<relationships>>. These mapping defaults also apply when the XML descriptor
+is used to declare a relationship.
 
 ==== Bidirectional OneToOne Relationships
 
@@ -2009,7 +2015,7 @@ where `<PK of ADDRESS>` denotes the name of the primary key
 column of table `ADDRESS`. The foreign key column has the same
 type as the primary key of `ADDRESS`.
 
-==== Bidirectional ManyToMany Relationships [[a708]]
+==== Bidirectional ManyToMany Relationships [[bidirectional-relationships]]
 
 Assuming that:
 
@@ -2236,7 +2242,7 @@ primary key of `PATENT`. This foreign key column is named
 `PATENTS_<PK of PATENT>`, where `<PK of PATENT>` denotes the name of the
 primary key column of table `PATENT`.
 
-=== Inheritance [[a765]]
+=== Inheritance [[inheritance]]
 
 An entity class might inherit another entity class. If this is the case,
 then:

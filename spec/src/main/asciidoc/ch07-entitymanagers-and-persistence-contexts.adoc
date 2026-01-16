@@ -467,12 +467,12 @@ If a persistence context of type
 `SynchronizationType.UNSYNCHRONIZED` has been joined to the JTA
 transaction, transaction rollback will cause the persistence context to
 be cleared and all pre-existing managed and removed instances to become
-detached. (See <<a2049>>.)
+detached. (See <<rollback>>.)
 
 When a JTA transaction exists, a persistence
 context of type `SynchronizationType.UNSYNCHRONIZED` is propagated with
-that transaction according to the rules in <<a11820>> regardless of whether the persistence context has been
-joined to that transaction.
+that transaction according to the rules in <<a11820>> regardless of whether
+the persistence context has been joined to that transaction.
 
 ==== Container-managed Transaction-scoped Persistence Context [[a11805]]
 

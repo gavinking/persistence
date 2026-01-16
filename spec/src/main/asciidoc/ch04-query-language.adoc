@@ -139,7 +139,7 @@ constituent select queries either:
 
 - have exactly the same type, as defined by <<a5439>>, or
 - are entity types which inherit a common entity type, as defined
-  by <<a765>>.
+  by <<inheritance>>.
 
 
 ==== Update and Delete Statements

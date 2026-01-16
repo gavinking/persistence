@@ -2,7 +2,7 @@
 // Copyright (c) 2017, 2023 Contributors to the Eclipse Foundation
 //
 
-== Entity Operations [[a1060]]
+== Entity Operations [[entity-operations]]
 
 This chapter describes:
 
@@ -26,16 +26,17 @@ Every instance of `EntityManager` has an associated _persistence context_.
 A persistence context is a set of entity instances in which for any given
 persistent entity identity there is a unique entity instance. Within the
 persistence context, the entity instances and their lifecycle are managed.
-The entity instance lifecycle is defined in <<a1929>>. The relationship
-between entity managers and persistence contexts is described in <<a2027>>,
-and again in further detail in <<a11431>>.
+The entity instance lifecycle is defined in <<lifecycle>>. The relationship
+between entity managers and persistence contexts is described in
+<<context-lifetime-transaction>>, and again in further detail in <<a11431>>.
 
 The `EntityManager` interface defines the methods used to interact with
 its persistence context. The `EntityManager` API is used to create and
-remove persistent entity instances, to find persistent entities by primary
-key, and to query over persistent entity types. <<a1066>> describes the
-`EntityManager` interface. <<a2052>> describes mechanisms for concurrency
-control and locking. <<a4639>> provides a summary of exceptions.
+remove persistent entity instances, to find persistent entities by
+primary key, and to query over persistent entity types. <<entity-manager>>
+describes the `EntityManager` interface. <<locking>> describes mechanisms
+for concurrency control and locking. <<a4639>> provides a summary of
+exceptions.
 
 When a persistence context is not required, `EntityAgent` offers an
 alternative way to interact with the database. The operations of
@@ -62,7 +63,7 @@ unit. The definition of persistence units is described in <<a12229>>. An
 describes mechanisms for portable configuration of the second-level cache.
 
 Jakarta Persistence features several mechanisms allowing user-written code
-to react to events occurring within the persistence context. <<a2153>>
+to react to events occurring within the persistence context. <<callbacks>>
 describes entity listeners and lifecycle callback methods for entities.
 <<a2366>> describes support for automatic use of Bean Validation. <<a2397>>
 describes mechanisms for defining conversions between entity and database
@@ -136,17 +137,19 @@ context is joined to that transaction. As an exception to this rule,
 `LockTimeoutException` does not cause the current transaction to be marked
 for rollback.
 
-=== EntityManager Interface [[a1066]]
+=== EntityManager Interface [[entity-manager]]
 
 The `EntityManager` interface may be found in <<_entitymanager_>>.
 
 In the Java SE environment, each instance of `EntityManager` is associated
 with a distinct _persistence context_. A persistence context is a set of
-entity instances in which for any given _persistent entity identity_, defined
-by an entity type and a primary key value, as specified in <<a132>>, there
-is at most one entity instance. The entity instances associated with a
-persistence context are considered managed objects, with a well-defined
-lifecycle under the control of the persistence provider.
+entity instances in which for any given _persistent entity identity_,
+defined by an entity type and a primary key value, as specified in
+<<identity>> and <<managed-entities>>, there is at most one entity instance.
+footnote:[Alternatively, the context is a map keyed by persistent identity.]
+The entity instances associated with a persistence context are considered
+managed objects, with a well-defined lifecycle under the control of the
+persistence provider.
 
 In the Jakarta EE environment, this programming model is augmented with
 _container-managed entity managers_ with _transaction-scoped persistence
@@ -178,9 +181,9 @@ public class OrderEntryBean implements OrderEntry {
 
 More information about container-managed entity managers and about
 transaction-scoped and extended persistence contexts may be found in
-<<a2027>> and <<a11431>>.
+<<persistence-context-type>> and <<a11431>>.
 
-=== Entity Instance Life Cycle [[a1929]]
+=== Entity Instance Life Cycle [[lifecycle]]
 
 Any entity instance can be characterized as being in one of the following
 _lifecycle states_ with respect to a given persistence context:
@@ -219,9 +222,9 @@ The methods `persist()`, `remove()`, `refresh()`, `detach()`, and `merge()`
 are called _lifecycle operations_.
 
 The `cascade` annotation element of a relationship modeling annotation,
-as defined in <<a516>>, specifies which lifecycle operations propagate
-to associated entities. Each lifecycle operation is identified by the
-corresponding member of the enumeration `CascadeType`.
+as defined in <<relationships>>, specifies which lifecycle operations
+propagate to associated entities. Each lifecycle operation is identified
+by the corresponding member of the enumeration `CascadeType`.
 
 [source,java]
 ----
@@ -474,18 +477,18 @@ must not assume that pending modifications have not been written to the
 database if the `flush()` method was not called before `detach()`. More
 information about synchronization may be found above in <<flush>>.
 
-==== Detached Entities [[a1982]]
+==== Detached Entities [[detached-entities]]
 
 A managed entity instance associated with a persistence context becomes
 detached whenever:
 
 - the persistence context is a container-managed transaction-scoped
-  persistence context, as defined in <<a2027>>, and the transaction
-  associated with the persistence context commits, as specified in
-  <<a2048>>,
+  persistence context, as defined in <<persistence-context-type>>,
+  and the transaction associated with the persistence context commits,
+  as specified in <<commit>>,
 - the persistence context is a container-managed persistence context,
   and the transaction associated with the persistence context rolls
-  back, as specified in <<a2049>>,
+  back, as specified in <<rollback>>,
 - the entity is passed to the `detach()` method of the `EntityManager`
   associated with the persistence context,
 - the `clear()` method is called on the `EntityManager` associated
@@ -550,7 +553,7 @@ produced:
   of the same association from `e2` yields a reference to a managed object
   `s` with the same persistent identity as `t`.
 
-If `e` has a version, as defined in <<a2060>>, the persistence provider
+If `e` has a version, as defined in <<version>>, the persistence provider
 must validate that `e` and `e2` have the same version, either during
 processing of the merge operation, or later when the flush operation
 occurs or when the transaction commits.
@@ -580,7 +583,7 @@ When this sort of interoperability across different persistence provider
 runtimes from different vendors is required, the application must not use
 lazy loading.
 
-==== Managed Instances
+==== Managed Instances [[managed-entities]]
 
 It is the responsibility of the persistence provider to ensure that at
 most one entity instance belonging to a given persistence context has a
@@ -590,7 +593,7 @@ instance is represented as a pair comprising:
 1. the class of the root entity of the entity class inheritance hierarchy
    to which the entity class belongs, together with
 2. the value of the primary key of the entity instance, as defined above
-   in <<a132>>.
+   in <<identity>>.
 
 Therefore, if the entity type `X` is a subclass of the root entity type
 `Y`, and `x` is an instance of `X` with primary key `k`, the persistent
@@ -650,11 +653,11 @@ from an entity agent.
   the entity manager. The instance remains in the managed state until
   the entity manager is closed and its persistence context is destroyed
   unless the instance is explicitly detached via a call to `detach()`
-  or `clear()`, as specified above in <<a1982>>. An entity manager is
-  required to ensure that if an entity instance representing a given
-  record already exists in its associated persistence context, then
-  exactly that instance is returned by every operation that returns an
-  entity representing the record.
+  or `clear()`, as specified above in <<detached-entities>>. An entity
+  manager is required to ensure that if an entity instance representing
+  a given record already exists in its associated persistence context,
+  then exactly that instance is returned by every operation that returns
+  an entity representing the record.
 
 [NOTE]
 When a container-managed `EntityManager` with a transaction-scoped
@@ -689,7 +692,7 @@ Otherwise, if a record exists with persistent identity _(`Y`,`k`)_ and
 it is represented by an entity class `Z` assignable to `X`, an instance
 of `Z` with primary key `k` is returned to the caller.
 
-==== Load State [[a2019]]
+==== Load State [[load-state]]
 
 An instance of an entity or embeddable class is considered _loaded_ if every
 attribute of the entity or embeddable class mapped (explicitly or by default)
@@ -699,14 +702,14 @@ or embeddable object might have an unloaded attribute if and only if the
 attribute is mapped as `FetchType.LAZY`.
 
 The available state of an entity instance and its associated instances is
-described above in <<a1982>>.
+described above in <<detached-entities>>.
 
 An attribute of an entity or embedded class might also be considered _loaded_.
 
-- An embedded attribute, as defined in <<a487>> is considered to be loaded
-  if the embedded attribute was loaded from the database or assigned by the
-  application, and, if the attribute references a non-null instance, the
-  embeddable instance is loaded.
+- An embedded attribute, as defined in <<embeddable>> is considered to be
+  loaded if the embedded attribute was loaded from the database or assigned
+  by the application, and, if the attribute references a non-null instance,
+  the embeddable instance is loaded.
 
 - A collection-valued attribute is considered to be loaded if the collection
   was loaded from the database or the value of the attribute was assigned by
@@ -734,7 +737,7 @@ and described in <<a12177>> may be used instead.
 Persistence provider contracts for determining the load state of an entity or
 entity attribute are defined in <<a13592>>.
 
-=== Persistence Context Lifetime and Synchronization Type [[a2027]]
+=== Persistence Context Lifetime and Transaction Synchronization [[context-lifetime-transaction]]
 
 In the Jakarta EE environment, a _container-managed persistence context_
 is a persistence context whose lifecycle is managed by the container.
@@ -755,7 +758,7 @@ context is considered an application-managed persistence context by this
 specification, even if its lifecycle is managed by some container-like
 framework.
 
-==== Persistence Context Types
+==== Persistence Context Types [[persistence-context-type]]
 
 There are two kinds of container-manager persistence context,
 distinguished by distinct rules for their lifecycle and propagation:
@@ -880,9 +883,10 @@ An application-managed persistence context associated with a
 resource-local entity manager is always automatically joined to any
 resource-local transaction begun for that entity manager.
 
-Persistence context synchronization type is further described in <<a11797>>.
+Persistence context synchronization types are further described in
+<<a11797>>.
 
-==== Transaction Commit [[a2048]]
+==== Transaction Commit [[commit]]
 
 Transaction commit triggers synchronization of pending modifications
 held in any persistence context joined to the transaction, as specified
@@ -893,7 +897,7 @@ to an active transaction become detached when the transaction commits;
 the managed entities of an extended persistence context remain managed
 across transaction commits.
 
-==== Transaction Rollback [[a2049]]
+==== Transaction Rollback [[rollback]]
 
 Transaction rollback typically results in a loss of consistency between
 records in the database and any persistence context joined to the
@@ -945,7 +949,7 @@ any query object obtained by calling `createQuery()`, `createNamedQuery()`,
 `createNativeQuery()`, or `createStoredProcedureQuery()` on an `EntityAgent`,
 are always detached.
 
-=== Locking and Concurrency [[a2052]]
+=== Locking and Concurrency [[locking]]
 
 This specification assumes the use of
 optimistic concurrency control. It assumes that the databases to which
@@ -972,14 +976,14 @@ however, is outside the scope of this specification.]
 
 In addition, both pessimistic and optimistic
 locking are supported for selected entities by means of specified lock
-modes. Optimistic locking is described in <<a2056>> and <<a2059>>; pessimistic locking
-in <<a2066>>. <<a2084>> describes the setting of
-optimistic and pessimistic lock modes. The configuration of the setting
-of optimistic lock modes is described in <<a2100>>,
-and the configuration of the setting of pessimistic lock modes is
-described in <<a2113>>.
+modes. Optimistic locking is described in <<optimistic-locking>> and
+<<optimistic-version>>; pessimistic locking in <<pessimistic-locking>>.
+<<lock-modes>> describes the setting of optimistic and pessimistic lock
+modes. The configuration of the setting of optimistic lock modes is
+described in <<a2100>>, and the configuration of the setting of
+pessimistic lock modes is described in <<a2113>>.
 
-==== Optimistic Locking [[a2056]]
+==== Optimistic Locking [[optimistic-locking]]
 
 _Optimistic locking_ is a system of concurrency control where each
 revision of an item of data is assigned a version number or timestamp.
@@ -1008,7 +1012,7 @@ when no intervening transaction has already updated the item, preventing
 the loss of updates made by such intervening transactions.
 
 The persistence provider is required to perform optimistic locking
-automatically for every entity with a version, as defined in <<a2060>>.
+automatically for every entity with a version, as defined in <<version>>.
 A portable application which wishes to take advantage of automatic
 optimistic locking must specify a version field or property for each
 optimistically-locked entity using the `@Version` annotation defined in
@@ -1042,13 +1046,13 @@ given entity is considered to include:
 
 - every persistent field or property which is not a relationship to
   another entity and is not annotated `ExcludedFromVersioning`, and
-- every relationship owned by the entity, as defined by <<a516>>,
+- every relationship owned by the entity, as defined by <<relationships>>,
   which is not annotated `ExcludedFromVersioning` on the owning side.
 footnote:[This includes owned relationships maintained in join tables.]
 
 Unowned relationships are not considered part of the state of the entity.
 
-==== Entity Versions and Optimistic Locking [[a2059]]
+==== Entity Versions and Optimistic Locking [[optimistic-version]]
 
 The entity version must be updated by the persistence provider each
 time the state of an entity instance is written to the database.
@@ -1085,7 +1089,7 @@ is not guaranteed. The absence a version for some entity involved in
 the update or merge operation does not impede completion of the
 operation.
 
-==== Pessimistic Locking [[a2066]]
+==== Pessimistic Locking [[pessimistic-locking]]
 
 While optimistic locking is typically
 appropriate in dealing with moderate contention among concurrent
@@ -1161,14 +1165,14 @@ Whenever a pessimistically locked entity
 containing a version attribute is updated on the database, the
 persistence provider must also update (increment) the entity's version
 column to enable correct interaction with applications using optimistic
-locking. See <<a2059>> and <<a2084>>.
+locking. See <<optimistic-version>> and <<lock-modes>>.
 
 Pessimistic locking may be applied to
 entities that do not contain version attributes. However, in this case
 correct interaction with applications using optimistic locking cannot be
 ensured.
 
-==== Lock Modes [[a2084]]
+==== Lock Modes [[lock-modes]]
 
 Lock modes are intended to provide a facility
 that enables the effect of “repeatable read” semantics for the items
@@ -1390,7 +1394,8 @@ updated, then the implementation must ensure that the requirements of
 ===== Lock Mode Properties and Uses [[a2132]]
 
 The following property is defined by this
-specification for use in pessimistic locking, as described in <<a2066>>:
+specification for use in pessimistic locking, as described in
+<<pessimistic-locking>>:
 
 [source,java]
 ----
@@ -1476,7 +1481,7 @@ Refreshing objects or reloading objects in a
 new transaction context and then retrying the transaction is a potential
 response to an `OptimisticLockException`.
 
-=== Entity Listeners and Callback Methods [[a2153]]
+=== Entity Listeners and Callback Methods [[callbacks]]
 
 A method may be designated as a lifecycle callback method to receive
 notification of _entity lifecycle events_. A lifecycle callback method
@@ -1693,7 +1698,7 @@ An entity or entity listener may have multiple lifecycle callback methods:
   type of lifecycle event, but at most one callback method for a given
   type of event and given parameter type.
 
-==== Semantics of the Life Cycle Callback Methods for Entities [[a2202]]
+==== Semantics of the Life Cycle Callback Methods for Entities [[entity-callbacks]]
 
 A `@PrePersist`, `@PreRemove`, or `@PreMerge` callback occurs before
 the respective persist, remove, or merge operation for an entity is
@@ -2078,7 +2083,7 @@ Validation constraints.
 Automatic validation using these constraints
 is achieved by specifying that Jakarta Persistence delegate validation to
 the Bean Validation implementation upon the pre-persist, pre-update, and
-pre-remove entity lifecycle events described in <<a2202>>.
+pre-remove entity lifecycle events described in <<entity-callbacks>>.
 
 Validation can also be achieved by the
 application calling the `validate` method of a `Validator` instance upon
@@ -2619,7 +2624,7 @@ between:
 
 - the _target type_ of the converter, an arbitrary Java type which may be
   used as the type of a persistent field or property, and
-- a basic type (see <<a486>>) used as an intermediate step in mapping to
+- a basic type (see <<basic-types>>) used as an intermediate step in mapping to
   the database representation.
 
 A converter can be used to convert attributes defined by entity classes,
@@ -3027,9 +3032,9 @@ annotation.].
 - otherwise, if the query object was obtained or from an `EntityManager`
   with an extended persistence context, the returned entities are managed.
 
-See <<a2027>> for information about transaction-scoped and extended
-persistence contexts. See <<a11431>> for further discussion of entity
-manager use with no active transaction and persistence context types.
+See <<context-lifetime-transaction>> for information about transaction-scoped
+and extended persistence contexts. See <<a11431>> for further discussion of
+entity manager use with no active transaction and persistence context types.
 
 The `execute()` method of `Statement` must not be called without an
 active transaction context. The `executeUpdate()` of `Query` or
@@ -3815,8 +3820,8 @@ result class. Either:
   entity result with implicit field mappings determined by the names
   of the columns in the result set and the object/relational mapping
   of the entity, as specified above in <<entity-results>>,
-- the result class is the class of a basic type listed in <<a486>> and
-  the result set must have a single column which is interpreted as a
+- the result class is the class of a basic type listed in <<basic-types>>
+  and the result set must have a single column which is interpreted as a
   scalar result as specified in <<scalar-results>>,
 - the result class is a non-`abstract` class or record type with a
   constructor with the same number of parameters as the result set has
