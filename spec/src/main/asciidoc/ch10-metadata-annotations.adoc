@@ -39,7 +39,7 @@ public @interface Entity {
 The following annotations are used to declare entity listeners
 and callback methods, as specified in <<a2153>>.
 
-==== `EntityListener` Annotation
+==== `EntityListener` Annotation [[entity-listener-annotation]]
 
 The `@EntityListener` annotation declares an entity listener class
 and determines the entity classes to which it applies. The entity
