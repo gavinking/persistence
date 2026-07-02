@@ -1320,6 +1320,11 @@ meth public static jakarta.persistence.PessimisticLockScope valueOf(java.lang.St
 meth public static jakarta.persistence.PessimisticLockScope[] values()
 supr java.lang.Enum<jakarta.persistence.PessimisticLockScope>
 
+CLSS public abstract interface !annotation jakarta.persistence.PostCreate
+ anno 0 java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy value=RUNTIME)
+ anno 0 java.lang.annotation.Target(java.lang.annotation.ElementType[] value=[METHOD])
+intf java.lang.annotation.Annotation
+
 CLSS public abstract interface !annotation jakarta.persistence.PostDelete
  anno 0 java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy value=RUNTIME)
  anno 0 java.lang.annotation.Target(java.lang.annotation.ElementType[] value=[METHOD])
@@ -1351,6 +1356,11 @@ CLSS public abstract interface !annotation jakarta.persistence.PostUpdate
 intf java.lang.annotation.Annotation
 
 CLSS public abstract interface !annotation jakarta.persistence.PostUpsert
+ anno 0 java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy value=RUNTIME)
+ anno 0 java.lang.annotation.Target(java.lang.annotation.ElementType[] value=[METHOD])
+intf java.lang.annotation.Annotation
+
+CLSS public abstract interface !annotation jakarta.persistence.PreClose
  anno 0 java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy value=RUNTIME)
  anno 0 java.lang.annotation.Target(java.lang.annotation.ElementType[] value=[METHOD])
 intf java.lang.annotation.Annotation
