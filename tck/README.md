@@ -15,10 +15,10 @@
 Jakarta Persistence TCK
 =======================
 
-To run from the command line:
+To run from the command line on PostgreSQL:
 
     cd tck
-    mvn -pl spec-tests test -P "hibernate,postgresql" \
+    mvn -pl spec-tests test -am -P "hibernate,postgresql" \
     -Djakarta.persistence.jdbc.user=user \
     -Djakarta.persistence.jdbc.password=password \
     -Djakarta.persistence.jdbc.url=jdbc:postgresql:database \
@@ -26,6 +26,11 @@ To run from the command line:
 
 where `database` is the name of the database and `user` and 
 `password` are the corresponding credentials.
+
+Or, to run on h2:
+
+    cd tck
+    mvn -pl spec-tests test -am -P "hibernate,h2"
 
 To accelerate the test suite, first export the TCK DDL schema 
 to the database and remove the last line of the command above.

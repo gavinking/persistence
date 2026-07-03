@@ -190,9 +190,9 @@ public class SeJoinTableSchemaGenerationAnnotationClient extends PMClientBase {
 		 */
 
 		pass2a = findDataInFile(f2, List.of("ALTER TABLE", "SCHEMAGEN_COURSE_STUDENT DROP", "STUDENTIDCONSTRAINT"));
-		pass2a = pass2a || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGEN_COURSE_STUDENT", "CASCADE CONSTRAINTS"));
+		pass2a = pass2a || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGEN_COURSE_STUDENT", "CASCADE"));
 		pass2b = findDataInFile(f2, List.of("ALTER TABLE", "SCHEMAGEN_COURSE_STUDENT DROP", "COURSEIDCONSTRAINT"));
-		pass2b = pass2b || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGEN_COURSE_STUDENT", "CASCADE CONSTRAINTS"));
+		pass2b = pass2b || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGEN_COURSE_STUDENT", "CASCADE"));
 		expected.clear();
 		expected.add("DROP TABLE");
 		expected.add("SCHEMAGEN_COURSE_STUDENT");
