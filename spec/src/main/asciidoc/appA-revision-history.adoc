@@ -41,6 +41,8 @@ Added `FETCHED` to `PessimisticLockScope`, `lockScope` to `@NamedQuery`, and `se
 
 Added new lifecycle callback types: `@PreMerge`, `@PreInsert`, `@PostInsert`, `@PreUpsert`, `@PostUpsert`, `@PreDelete`, `@PostDelete`
 
+Added persistence unit lifecycle callback types: `@PostCreate` and `@PreClose`
+
 Added `addListener()` to `EntityManagerFactory`
 
 Added `@EntityListener` annotation; allow `@EntityListeners` on a package descriptor or module descriptor
@@ -149,6 +151,8 @@ Added `PersistenceUnitInfo.getAllManagedClassNames()` and `PersistenceProvider.g
 Redefined semantics of `EntityExistsException`
 
 Clarified that null collection-valued attributes are interpreted as empty collections
+
+Clarified that converter target types must not be embeddable types, and that converter-applied attributes default to basic attributes
 
 Specified that changes to an owned collection should result in an entity lifecycle callback
 
