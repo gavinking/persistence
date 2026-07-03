@@ -106,7 +106,7 @@ The object/relational mapping information can take the form of:
 The managed persistence classes may be:
 
 - contained within the root of the persistence unit,
-- specified by reference—that is, by naming the classes, class archives, or
+- specified by reference--that is, by naming the classes, class archives, or
   XML mapping files (which in turn reference classes) that are accessible on
   the application classpath, or
 - specified by any combination of these means.
@@ -302,9 +302,9 @@ public @interface Discoverable {
 ----
 
 This specification includes a number of discoverable annotation types,
-including `@Entity`, `@Embeddable`, `@Converter`, `@NamedQuery`, and
-so on. A persistence provider may define its own custom discoverable
-annotation types.
+including `@Entity`, `@Embeddable`, `@MappedSuperclass`, `@Converter`,
+`@EntityListener`, `@NamedQuery`, and so on. A persistence provider may
+define its own custom discoverable annotation types.
 
 Exceptionally, the annotation `jakarta.data.repository.Repository`
 must be treated as a discoverable annotation type, even though it is
