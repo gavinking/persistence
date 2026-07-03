@@ -20,16 +20,16 @@
 #
 
 #
-ee/jakarta/tck/persistence/core/metamodelapi/identifiabletype/Client.java#getDeclaredSingularAttributes
+ee/jakarta/tck/persistence/core/metamodelapi/identifiabletype/IdentifiableTypeMetamodelClient.java#getDeclaredSingularAttributes
 
 #
 #
-ee/jakarta/tck/persistence/core/entityManagerFactory/Client2.java#createEntityManagerFactoryStringTest
+ee/jakarta/tck/persistence/core/entityManagerFactory/EntityManagerFactoryAutoCloseableClient.java#createEntityManagerFactoryStringTest
 
 #
-ee/jakarta/tck/persistence/se/schemaGeneration/annotations/tableGenerator/Client.java#tableGeneratorTest
+ee/jakarta/tck/persistence/se/schemaGeneration/annotations/tableGenerator/SeTableGeneratorSchemaGenerationAnnotationClient.java#tableGeneratorTest
 
 #
-ee/jakarta/tck/persistence/core/query/language/Client6.java#resultContainsFetchReference
+ee/jakarta/tck/persistence/core/query/language/LanguageQueryResultContainsFetchReferenceClient.java#resultContainsFetchReference
 
 

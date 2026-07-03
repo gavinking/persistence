@@ -23,7 +23,7 @@ package ee.jakarta.tck.persistence.core.relationship.defaults;
 import java.lang.System.Logger;
 import java.util.Collection;
 
-import ee.jakarta.tck.persistence.core.override.entitylistener.Client;
+import ee.jakarta.tck.persistence.core.override.entitylistener.EntityListenerOverrideClient;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -36,7 +36,7 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Company implements java.io.Serializable {
 
-	private static final Logger logger = System.getLogger(Client.class.getName());
+	private static final Logger logger = System.getLogger(EntityListenerOverrideClient.class.getName());
 
 	private long companyId;
 
