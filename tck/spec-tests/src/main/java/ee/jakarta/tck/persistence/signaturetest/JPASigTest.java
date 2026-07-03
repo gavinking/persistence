@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.System.Logger;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
@@ -40,6 +42,8 @@ import com.sun.ts.tests.signaturetest.SignatureTestDriverFactory;
 public class JPASigTest extends SigTest {
 
   private static final Logger logger = System.getLogger(JPASigTest.class.getName());
+
+  private static final String SIGNATURE_FILE_MARKER = "#Signature file";
 
   public JPASigTest() {
     setup(new String[]{}, System.getProperties());
@@ -120,6 +124,7 @@ public class JPASigTest extends SigTest {
 
     InputStream inStreamSigFile = JPASigTest.class.getClassLoader().getResourceAsStream("ee/jakarta/tck/persistence/signaturetest/jakarta.persistence.sig_"+packageVersion);
     File sigFile = writeStreamToSigFile(inStreamSigFile, apiPackage, packageVersion);
+    normalizeSignatureFile(sigFile);
     logger.log(Logger.Level.INFO, "signature File location is :"+sigFile.getCanonicalPath());
 
     } catch(IOException ex) {
@@ -145,4 +150,17 @@ public class JPASigTest extends SigTest {
     return driver;
 
   } // END getSigTestDriver
+
+  private void normalizeSignatureFile(File sigFile) throws IOException {
+    var lines = Files.readAllLines(sigFile.toPath(), StandardCharsets.UTF_8);
+    for (int i = 0; i < lines.size(); i++) {
+      if (lines.get(i).startsWith(SIGNATURE_FILE_MARKER)) {
+        if (i > 0) {
+          Files.write(sigFile.toPath(), lines.subList(i, lines.size()), StandardCharsets.UTF_8);
+        }
+        return;
+      }
+    }
+    throw new IOException("Could not find signature file marker in " + sigFile.getCanonicalPath());
+  }
 }
