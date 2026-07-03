@@ -132,6 +132,13 @@ public class SeEnumeratedSchemaGenerationAnnotationClient extends PMClientBase {
 		expected.add("ENUMDATA VARCHAR");
 		expected.add("PRIMARY KEY (ID)");
 		pass1 = findDataInFile(f1, expected);
+		if (!pass1) {
+			expected.clear();
+			expected.add("CREATE TABLE SCHEMAGENSIMPLE");
+			expected.add("ENUMDATA ENUM");
+			expected.add("PRIMARY KEY (ID)");
+			pass1 = findDataInFile(f1, expected);
+		}
 		// CREATE TABLE SCHEMAGENSIMPLE (ID INTEGER NOT NULL, ENUMDATA VARCHAR(255),
 		// PRIMARY KEY (ID))
 

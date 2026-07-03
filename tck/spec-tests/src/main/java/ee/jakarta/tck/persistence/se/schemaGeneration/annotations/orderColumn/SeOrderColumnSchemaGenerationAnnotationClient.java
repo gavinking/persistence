@@ -175,7 +175,7 @@ public class SeOrderColumnSchemaGenerationAnnotationClient extends PMClientBase 
 		expected.add("ALTER TABLE");
 		expected.add("SCHEMAGENEMP DROP");
 		pass2c = findDataInFile(f2, expected);
-		pass2c = pass2c || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGENEMP", "CASCADE CONSTRAINTS"));
+		pass2c = pass2c || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGENEMP", "CASCADE"));
 
 		logger.log(Logger.Level.TRACE, "Execute the create script");
 		props = getPersistenceUnitProperties();

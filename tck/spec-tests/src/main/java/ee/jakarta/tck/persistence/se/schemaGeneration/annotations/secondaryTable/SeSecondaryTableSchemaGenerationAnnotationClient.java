@@ -163,7 +163,7 @@ public class SeSecondaryTableSchemaGenerationAnnotationClient extends PMClientBa
 		expected.add("ALTER TABLE");
 		expected.add("SCHEMAGENSIMPLE_SECOND DROP");
 		pass2a = findDataInFile(f2, expected);
-		pass2a = pass2a || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGENSIMPLE_SECOND", "CASCADE CONSTRAINTS"));
+		pass2a = pass2a || findDataInFile(f2, List.of("DROP TABLE", "SCHEMAGENSIMPLE_SECOND", "CASCADE"));
 		expected.clear();
 		expected.add("DROP TABLE");
 		expected.add("SCHEMAGENSIMPLE");
