@@ -309,7 +309,7 @@
                                 <include>**/*Client*.*</include>
                                 <include>**/*JPASigTest*.*</include>
                             </includes>
-                            <test>!**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</test>
+                            <test>!**/ee/jakarta/tck/persistence/se/entityManagerFactory/SeEntityManagerFactoryCreateEntityManagerFactoryClient#createEntityManagerFactoryNoBeanValidatorTest</test>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${jpa.classes}</additionalClasspathElement>
                                 <additionalClasspathElement>${jdbc.lib.classpath}</additionalClasspathElement>
@@ -348,7 +348,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/Client2#createEntityManagerFactoryNoBeanValidatorTest</test>
+                            <test>**/ee/jakarta/tck/persistence/se/entityManagerFactory/SeEntityManagerFactoryCreateEntityManagerFactoryClient#createEntityManagerFactoryNoBeanValidatorTest</test>
                             <additionalClasspathElements>
                                 <additionalClasspathElement>${jpa.classes}</additionalClasspathElement>
                                 <additionalClasspathElement>${jdbc.lib.classpath}</additionalClasspathElement>

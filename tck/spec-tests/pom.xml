@@ -142,6 +142,8 @@
                         <Select_Jpa_Purchase_Order>SELECT ID, TOTAL FROM PURCHASE_ORDER WHERE ID=?</Select_Jpa_Purchase_Order>
                         <log.file.location>${log.file.location}</log.file.location>
                         <jdbc.db>${jdbc.db}</jdbc.db>
+                        <sigTestClasspath>${project.basedir}/../../api/target/classes${path.separator}${settings.localRepository}/jakarta/persistence/jakarta.persistence-api/${project.version}/jakarta.persistence-api-${project.version}.jar${path.separator}${settings.localRepository}/jakarta/annotation/jakarta.annotation-api/3.0.0/jakarta.annotation-api-3.0.0.jar${path.separator}${project.build.directory}/jdk11-bundle/java.base${path.separator}${project.build.directory}/jdk11-bundle/java.rmi${path.separator}${project.build.directory}/jdk11-bundle/java.sql${path.separator}${project.build.directory}/jdk11-bundle/java.naming</sigTestClasspath>
+                        <jimage.dir>${project.build.directory}/jdk11-bundle</jimage.dir>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
