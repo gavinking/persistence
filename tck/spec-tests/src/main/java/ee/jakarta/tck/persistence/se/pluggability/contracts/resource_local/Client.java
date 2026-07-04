@@ -30,6 +30,8 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -85,6 +87,7 @@ public class Client extends PMClientBase {
 
 	}
 
+	@AfterAll
 	public void removePluggabilityJarFromCP() throws Exception {
 		if (pluggabilityJarDeployed) {
 			URLClassLoader currentThreadClassLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
@@ -94,7 +97,10 @@ public class Client extends PMClientBase {
 		}
 	}
 
-	public JavaArchive createPluggabilityJar() throws Exception {
+	public void createPluggabilityJar() throws Exception {
+		if (pluggabilityJarDeployed) {
+			return;
+		}
 
 		JavaArchive archive = ShrinkWrap.create(JavaArchive.class, "jpa_alternate_provider.jar");
 		archive.addPackages(true, "ee.jakarta.tck.persistence.common.pluggability.altprovider.implementation");
@@ -112,9 +118,6 @@ public class Client extends PMClientBase {
 		Thread.currentThread().setContextClassLoader(urlClassLoader);
 
 		pluggabilityJarDeployed = true;
-
-		return archive;
-
 	}
 
 	/*
@@ -672,9 +675,4 @@ public class Client extends PMClientBase {
 		puInfo = emfImpl.puInfo;
 	}
 
-	@Override
-	public void removeTestJarFromCP() throws Exception {
-		super.removeTestJarFromCP();
-		removePluggabilityJarFromCP();
-	}
 }
