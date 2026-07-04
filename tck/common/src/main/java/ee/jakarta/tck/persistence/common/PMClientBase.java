@@ -307,6 +307,11 @@ abstract public class PMClientBase implements UseEntityManager, UseEntityManager
     public void cleanupAll() throws Exception {
         try {
             if (isStandAloneMode() && emf != null && emf.isOpen()) {
+				// make sure we 100% drop the schema
+				//  some tests disable dropCreateSchemaOnStartByDefault
+				//  such tests usually manage the schema themselves,
+				//  but might not clean up things correctly.
+                emf.getSchemaManager().drop(true);
                 emf.close();
             }
         } finally {
