@@ -23,6 +23,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.QueryFlushMode;
 import jakarta.persistence.QueryHint;
 import jakarta.persistence.StatementOrTypedQuery;
+import jakarta.persistence.EntityGraph;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
