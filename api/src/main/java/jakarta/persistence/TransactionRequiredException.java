@@ -18,8 +18,36 @@
 package jakarta.persistence;
 
 /**
- * Thrown by the persistence provider when a transaction is required but is not
- * active.
+ * Thrown by the persistence provider when a transaction is required but is
+ * not active.
+ * <p>
+ * A {@code TransactionRequiredException} must be thrown by the persistence
+ * provider when:
+ * <ul>
+ * <li>The {@link EntityManager#flush} operation is called on an entity
+ *     manager with no active transaction context.
+ * <li>The {@link EntityManager#joinTransaction} operation is called on
+ *     an entity manager with no active transaction context.
+ * <li>An entity lifecycle operation like {@link EntityManager#persist},
+ *     {@link EntityManager#remove}, {@link EntityManager#merge}, or
+ *     {@link EntityManager#refresh} is called on an entity manager with
+ *     a {@linkplain PersistenceContextType#TRANSACTION transaction-scoped}
+ *     persistence context with no active transaction context.
+ * <li>The {@link EntityManager#lock} operation is called on an entity
+ *     manager with no active transaction context.
+ * <li>Any operation of {@code EntityManager} or {@code EntityAgent} which
+ *     accepts a {@linkplain LockModeType lock mode} is called on a manager
+ *     or agent with no active transaction context, and the given lock mode
+ *     is not {@link LockModeType#NONE}.
+ * <li>A JPQL bulk update or delete statement is
+ *     {@linkplain Statement#execute executed} with no active transaction
+ *     context.
+ * <li>A JPQL query is executed with no active transaction context, and a
+ *     {@linkplain LockModeType lock mode} other than {@link LockModeType#NONE}
+ *     is specified via {@link TypedQuery#setLockMode setLockMode()},
+ *     {@link jakarta.persistence.query.QueryOptions#lockMode}, or
+ *     {@link NamedQuery#lockMode}.
+ * </ul>
  * 
  * @since 1.0
  */
