@@ -22,6 +22,16 @@ import java.util.List;
  * Thrown by the persistence provider when a pessimistic locking conflict
  * occurs. This exception may be thrown by an API call, during flush, or
  * when the transaction commits.
+ * <p>
+ * A {@code PessimisticLockException} must be thrown by the persistence
+ * provider when:
+ * <ul>
+ * <li>A requested pessimistic lock cannot be obtained, and the database
+ *     locking failure results in transaction-level rollback.
+ * <li>A pessimistic read lock cannot be converted to an exclusive lock
+ *     when the entity is flushed to the database, and the database locking
+ *     failure results in transaction-level rollback.
+ * </ul>
  *
  * <p> If a {@code PessimisticLockException} is thrown by an
  * {@link EntityManager} with a persistence context joined to an active

@@ -22,6 +22,23 @@ import java.util.List;
  * Thrown by the persistence provider when an optimistic locking conflict
  * occurs. This exception may be thrown by an API call, during flush, or
  * when the transaction commits.
+ * <p>
+ * An {@code OptimisticLockException} must be thrown by the persistence
+ * provider when:
+ * <ul>
+ * <li>The {@linkplain Version version} of an entity in the persistence
+ *     context does not match the version held in the database when the
+ *     entity is written or deleted.
+ * <li>A detached entity passed to {@link EntityManager#merge} holds a stale
+ *     revision of the state of the entity.
+ * <li>An optimistic version check performed while obtaining a pessimistic
+ *     lock on a versioned entity fails.
+ * <li>An {@link EntityAgent#update} or {@link EntityAgent#delete} operation
+ *     is called for an entity with no matching row in the database, or an
+ *     optimistic version check performed by the operation fails.
+ * <li>An {@link EntityAgent#upsert} operation fails an optimistic version
+ *     check.
+ * </ul>
  *
  * <p> If an {@code OptimisticLockException} is thrown by an
  * {@link EntityManager} with a persistence context joined to an active
