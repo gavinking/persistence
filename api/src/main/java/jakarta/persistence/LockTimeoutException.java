@@ -21,6 +21,16 @@ package jakarta.persistence;
  * conflict occurs that does not result in transaction rollback.
  * This exception may be thrown by an API call, during flush, or
  * when the transaction commits.
+ * <p>
+ * A {@code LockTimeoutException} must be thrown by the persistence provider
+ * when:
+ * <ul>
+ * <li>A requested pessimistic lock cannot be obtained, and the database
+ *     locking failure results in only statement-level rollback.
+ * <li>A pessimistic read lock cannot be converted to an exclusive lock
+ *     when the entity is flushed to the database, and the database locking
+ *     failure results in only statement-level rollback.
+ * </ul>
  *
  * <p> This exception type is considered recoverable. When this
  * exception type is thrown, the current transaction is not
