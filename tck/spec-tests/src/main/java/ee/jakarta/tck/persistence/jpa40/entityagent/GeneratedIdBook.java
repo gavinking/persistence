@@ -14,43 +14,33 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package ee.jakarta.tck.persistence.jpa40.sqlresultmapping;
+package ee.jakarta.tck.persistence.jpa40.entityagent;
 
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.Table;
 
 /**
- * Named SQL result set mapping carried by this entity class for use in
- * {@link ee.jakarta.tck.persistence.jpa40.sqlresultmapping.Jpa40ResultSetMappingMetadataClient}.
+ * Entity with a generated identifier, used to verify that
+ * {@link jakarta.persistence.EntityAgent#insert(Object)} assigns the
+ * generated id back to the supplied instance.
  */
-@Entity(name = "Jpa40SqlMappingBook")
-@Table(name = "JPA40_SQL_BOOK")
-@SqlResultSetMapping(
-        name = SqlMappingBook.MAPPING_NAME,
-        classes = @ConstructorResult(
-                targetClass = SqlMappingDto.class,
-                columns = {
-                        @ColumnResult(name = "BOOK_ID", type = Integer.class),
-                        @ColumnResult(name = "BOOK_TITLE", type = String.class)
-                }))
-public class SqlMappingBook {
-
-    public static final String MAPPING_NAME = "Jpa40SqlMappingBook.dto";
+@Entity(name = "Jpa40GeneratedIdBook")
+@Table(name = "JPA40_GENERATED_ID_BOOK")
+public class GeneratedIdBook {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String title;
 
-    public SqlMappingBook() {
+    public GeneratedIdBook() {
     }
 
-    public SqlMappingBook(Integer id, String title) {
-        this.id = id;
+    public GeneratedIdBook(String title) {
         this.title = title;
     }
 

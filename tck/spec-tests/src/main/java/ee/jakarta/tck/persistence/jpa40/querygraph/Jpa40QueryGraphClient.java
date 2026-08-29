@@ -17,12 +17,15 @@
 package ee.jakarta.tck.persistence.jpa40.querygraph;
 
 import ee.jakarta.tck.persistence.common.PMClientBase;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -149,6 +152,46 @@ public class Jpa40QueryGraphClient extends PMClientBase {
         assertTrue(Persistence.getPersistenceUtil().isLoaded(fromQueryWithGraph, "authors"));
         assertEquals(1, fromQueryWithGraph.getAuthors().size());
         assertEquals("Alpha", fromQueryWithGraph.getTitle());
+    }
+
+    /**
+     * Tests the Jakarta Persistence 4.0 {@link EntityAgent#createQuery(String,
+     * EntityGraph)} overload. The test verifies that a JPQL SELECT executed
+     * through an entity agent with an entity graph applies the graph's fetch
+     * plan, and that all returned instances are detached.
+     */
+    @Test
+    public void agentCreateQueryWithEntityGraphOverloadTest() {
+        getEntityManagerFactory().runInTransaction(EntityAgent.class, agent -> {
+            EntityGraph<QueryGraphBook> graph = agent.createEntityGraph(QueryGraphBook.class);
+            graph.addAttributeNode("publisher");
+
+            List<QueryGraphBook> books = agent
+                    .createQuery("SELECT b FROM Jpa40QueryGraphBook b", graph)
+                    .getResultList();
+
+            assertEquals(1, books.size());
+            QueryGraphBook book = books.get(0);
+            // publisher association should have been fetched by the graph
+            assertTrue(Persistence.getPersistenceUtil().isLoaded(book, "publisher"));
+            // authors was not in the graph and should be lazy
+            assertFalse(Persistence.getPersistenceUtil().isLoaded(book, "authors"));
+        });
+    }
+
+    /**
+     * Verifies {@link EntityAgent#createQuery(String, EntityGraph)} throws
+     * {@link IllegalArgumentException} when the query result type is
+     * incompatible with the root type of the supplied entity graph.
+     */
+    @Test
+    public void agentCreateQueryWithIncompatibleGraphThrowsIAETest() {
+        try (EntityAgent agent = getEntityManagerFactory().createEntityAgent()) {
+            EntityGraph<QueryGraphPublisher> publisherGraph =
+                    agent.createEntityGraph(QueryGraphPublisher.class);
+            assertThrows(IllegalArgumentException.class, () ->
+                    agent.createQuery("SELECT b FROM Jpa40QueryGraphBook b", publisherGraph));
+        }
     }
 
     private void createTestData() {

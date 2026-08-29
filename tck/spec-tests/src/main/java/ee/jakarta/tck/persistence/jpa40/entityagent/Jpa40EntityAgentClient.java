@@ -42,7 +42,8 @@ public class Jpa40EntityAgentClient extends PMClientBase {
         String packageName = Jpa40EntityAgentClient.class.getPackageName();
         String[] classes = {
                 packageName + ".AgentBook",
-                packageName + ".AgentPublisher"
+                packageName + ".AgentPublisher",
+                packageName + ".GeneratedIdBook"
         };
         return createDeploymentJar("jpa_jpa40_entityagent.jar", packageName, classes);
     }
@@ -475,6 +476,186 @@ public class Jpa40EntityAgentClient extends PMClientBase {
         if (transaction.isActive()) {
             transaction.rollback();
         }
+    }
+
+    /**
+     * Verifies the {@link jakarta.persistence.EntityManagerFactory#runInTransaction(Consumer)}
+     * rollback contract: if the lambda throws, the transaction is rolled back and
+     * the exception is rethrown to the caller.
+     */
+    @Test
+    public void runInTransactionRollsBackOnExceptionTest() {
+        long countBefore = countBooks();
+
+        try {
+            getEntityManagerFactory().runInTransaction(em -> {
+                em.persist(new AgentBook(99, "rolled back"));
+                throw new RuntimeException("force rollback");
+            });
+        } catch (RuntimeException ignored) {
+            // expected rethrow
+        }
+
+        // The persist must have been rolled back
+        assertEquals(countBefore, countBooks(),
+                "runInTransaction must roll back the transaction when the lambda throws");
+        assertNull(findBook(99));
+    }
+
+    /**
+     * Verifies the {@link jakarta.persistence.EntityManagerFactory#callInTransaction(Function)}
+     * rollback contract: if the function throws, the transaction is rolled back and
+     * the exception is rethrown to the caller.
+     */
+    @Test
+    public void callInTransactionRollsBackOnExceptionTest() {
+        long countBefore = countBooks();
+
+        try {
+            getEntityManagerFactory().callInTransaction(em -> {
+                em.persist(new AgentBook(98, "call rolled back"));
+                throw new RuntimeException("force rollback");
+            });
+        } catch (RuntimeException ignored) {
+            // expected rethrow
+        }
+
+        assertEquals(countBefore, countBooks(),
+                "callInTransaction must roll back the transaction when the function throws");
+        assertNull(findBook(98));
+    }
+
+    /**
+     * Verifies the {@link jakarta.persistence.EntityManagerFactory#callInTransaction(Class, Function)}
+     * overload with {@link EntityAgent}: the function's return value is committed
+     * and propagated to the caller.
+     */
+    @Test
+    public void agentCallInTransactionReturnsValueAndCommitsTest() {
+        createBooks(new AgentBook(50, "CallReturn"));
+
+        String title = getEntityManagerFactory().callInTransaction(EntityAgent.class,
+                agent -> agent.get(AgentBook.class, 50).getTitle());
+
+        assertEquals("CallReturn", title);
+    }
+
+    /**
+     * Verifies the {@link jakarta.persistence.EntityManagerFactory#callInTransaction(Class, Function)}
+     * rollback contract with {@link EntityAgent}: if the function throws, the
+     * transaction is rolled back and the exception is rethrown to the caller.
+     */
+    @Test
+    public void agentCallInTransactionRollsBackOnExceptionTest() {
+        long countBefore = countBooks();
+
+        try {
+            getEntityManagerFactory().callInTransaction(EntityAgent.class, agent -> {
+                agent.insert(new AgentBook(96, "agent call rolled back"));
+                throw new RuntimeException("force agent call rollback");
+            });
+        } catch (RuntimeException ignored) {
+            // expected rethrow
+        }
+
+        assertEquals(countBefore, countBooks(),
+                "EntityAgent callInTransaction must roll back when the function throws");
+        assertNull(findBook(96));
+    }
+
+    /**
+     * Verifies the {@link jakarta.persistence.EntityManagerFactory#runInTransaction(Class, Consumer)}
+     * EntityAgent variant rollback contract: if the lambda throws, the transaction
+     * is rolled back and the exception is rethrown to the caller.
+     */
+    @Test
+    public void agentRunInTransactionRollsBackOnExceptionTest() {
+        long countBefore = countBooks();
+
+        try {
+            getEntityManagerFactory().runInTransaction(EntityAgent.class, agent -> {
+                agent.insert(new AgentBook(97, "agent rolled back"));
+                throw new RuntimeException("force agent rollback");
+            });
+        } catch (RuntimeException ignored) {
+            // expected rethrow
+        }
+
+        assertEquals(countBefore, countBooks(),
+                "EntityAgent runInTransaction must roll back when the lambda throws");
+        assertNull(findBook(97));
+    }
+
+    /**
+     * Verifies that {@link EntityAgent#insert(Object)} assigns the
+     * generated identifier back to the supplied entity instance, as
+     * required by the specification.
+     */
+    @Test
+    public void entityAgentInsertAssignsGeneratedIdTest() {
+        GeneratedIdBook book = new GeneratedIdBook("Generated Title");
+        assertNull(book.getId());
+
+        EntityAgent agent = getEntityManagerFactory().createEntityAgent();
+        EntityTransaction transaction = agent.getTransaction();
+        try {
+            transaction.begin();
+            agent.insert(book);
+            transaction.commit();
+        } finally {
+            rollbackIfActive(transaction);
+            agent.close();
+        }
+
+        assertNotNull(book.getId(), "Generated id must be assigned back to the entity instance");
+        assertNotNull(agent.getEntityManagerFactory()
+                .callInTransaction(em -> em.find(GeneratedIdBook.class, book.getId())));
+    }
+
+    /**
+     * Verifies that {@link EntityAgent#insertMultiple(List)} assigns generated
+     * identifiers back to every entity instance in the supplied list.
+     */
+    @Test
+    public void entityAgentInsertMultipleAssignsGeneratedIdsTest() {
+        List<GeneratedIdBook> books = List.of(
+                new GeneratedIdBook("First"),
+                new GeneratedIdBook("Second"),
+                new GeneratedIdBook("Third"));
+
+        getEntityManagerFactory().runInTransaction(EntityAgent.class,
+                agent -> agent.insertMultiple(books));
+
+        for (GeneratedIdBook book : books) {
+            assertNotNull(book.getId(),
+                    "Generated id must be assigned back for each instance after insertMultiple");
+        }
+
+        // all ids must be distinct
+        long distinctIds = books.stream().map(GeneratedIdBook::getId).distinct().count();
+        assertEquals(books.size(), distinctIds, "Each inserted entity must receive a unique generated id");
+    }
+
+    /**
+     * Verifies that {@link EntityAgent#isOpen()} returns {@code false} after the
+     * agent is closed, and that subsequent calls to agent operations throw
+     * {@link IllegalStateException}.
+     */
+    @Test
+    public void closedEntityAgentThrowsIllegalStateExceptionTest() {
+        EntityAgent agent = getEntityManagerFactory().createEntityAgent();
+        assertTrue(agent.isOpen());
+
+        agent.close();
+
+        assertFalse(agent.isOpen());
+
+        assertAll(
+                () -> assertThrows(IllegalStateException.class, () -> agent.get(AgentBook.class, 1)),
+                () -> assertThrows(IllegalStateException.class, () -> agent.find(AgentBook.class, 1)),
+                () -> assertThrows(IllegalStateException.class,
+                        () -> agent.createQuery("SELECT b FROM Jpa40AgentBook b", AgentBook.class)),
+                () -> assertThrows(IllegalStateException.class, () -> agent.getTransaction()));
     }
 
 }

@@ -21,6 +21,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
 import jakarta.persistence.QueryFlushMode;
+import jakarta.persistence.Statement;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,6 +132,49 @@ public class Jpa40QueryFlushClient extends PMClientBase {
         getEntityManager().clear();
 
         assertEquals(1L, flushed);
+    }
+
+    /**
+     * Tests that {@link jakarta.persistence.QueryFlushMode#FLUSH} on a
+     * {@link jakarta.persistence.Statement} causes pending managed-entity changes
+     * to be synchronised before the bulk statement is executed, while
+     * {@link jakarta.persistence.QueryFlushMode#NO_FLUSH} suppresses that
+     * synchronisation.
+     */
+    @Test
+    public void statementQueryFlushModeTest() {
+        // NO_FLUSH: the pending title change must not be visible to the bulk UPDATE
+        getEntityManager().setFlushMode(FlushModeType.EXPLICIT);
+
+        EntityTransaction transaction = getEntityTransaction();
+        transaction.begin();
+        FlushBook book = getEntityManager().find(FlushBook.class, 1);
+        book.setTitle("PendingNoFlush");
+
+        // Bulk UPDATE matches only the new title — if NOT flushed, count = 0
+        int countNoFlush = getEntityManager()
+                .createStatement("UPDATE Jpa40FlushBook b SET b.title = 'BulkUpdated' WHERE b.title = 'PendingNoFlush'")
+                .setQueryFlushMode(QueryFlushMode.NO_FLUSH)
+                .execute();
+        transaction.rollback();
+        getEntityManager().clear();
+
+        assertEquals(0, countNoFlush, "Statement with NO_FLUSH must not see unflushed pending changes");
+
+        // FLUSH: the pending title change must be visible to the bulk UPDATE
+        transaction = getEntityTransaction();
+        transaction.begin();
+        FlushBook book2 = getEntityManager().find(FlushBook.class, 1);
+        book2.setTitle("PendingFlush");
+
+        int countFlush = getEntityManager()
+                .createStatement("UPDATE Jpa40FlushBook b SET b.title = 'BulkUpdated' WHERE b.title = 'PendingFlush'")
+                .setQueryFlushMode(QueryFlushMode.FLUSH)
+                .execute();
+        transaction.rollback();
+        getEntityManager().clear();
+
+        assertEquals(1, countFlush, "Statement with FLUSH must synchronise pending changes before executing");
     }
 
     private void createTestData() {
