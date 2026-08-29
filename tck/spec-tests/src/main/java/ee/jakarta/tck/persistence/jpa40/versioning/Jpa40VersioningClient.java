@@ -17,6 +17,7 @@
 package ee.jakarta.tck.persistence.jpa40.versioning;
 
 import ee.jakarta.tck.persistence.common.PMClientBase;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityTransaction;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,52 @@ public class Jpa40VersioningClient extends PMClientBase {
 
         VersionedBook changedVersion = getEntityManager().find(VersionedBook.class, 1);
         assertTrue(changedVersion.getVersion() > initialVersion);
+    }
+
+    /**
+     * Verifies that {@link jakarta.persistence.ExcludedFromVersioning} applies
+     * when the entity is updated through an {@link EntityAgent}: mutating only
+     * the excluded attribute must not increment the version.
+     */
+    @Test
+    public void excludedFromVersioningWithEntityAgentUpdateTest() {
+        try (EntityAgent agent = getEntityManagerFactory().createEntityAgent()) {
+            VersionedBook book = agent.get(VersionedBook.class, 1);
+            int initialVersion = book.getVersion();
+
+            EntityTransaction transaction = agent.getTransaction();
+            transaction.begin();
+            book.setAuditNote("agent-audit-only");
+            agent.update(book);
+            transaction.commit();
+
+            VersionedBook reloaded = agent.get(VersionedBook.class, 1);
+            assertEquals(initialVersion, reloaded.getVersion(),
+                    "Version must not increment when only @ExcludedFromVersioning field changes via EntityAgent");
+        }
+    }
+
+    /**
+     * Verifies that mutating a non-excluded field through an {@link EntityAgent}
+     * does increment the version, confirming that the exclusion rule is specific
+     * to the annotated field.
+     */
+    @Test
+    public void nonExcludedFieldWithEntityAgentUpdateIncrementsVersionTest() {
+        try (EntityAgent agent = getEntityManagerFactory().createEntityAgent()) {
+            VersionedBook book = agent.get(VersionedBook.class, 1);
+            int initialVersion = book.getVersion();
+
+            EntityTransaction transaction = agent.getTransaction();
+            transaction.begin();
+            book.setTitle("agent-title-change");
+            agent.update(book);
+            transaction.commit();
+
+            VersionedBook reloaded = agent.get(VersionedBook.class, 1);
+            assertTrue(reloaded.getVersion() > initialVersion,
+                    "Version must increment when a normal (non-excluded) field changes via EntityAgent");
+        }
     }
 
     private void createTestData() {

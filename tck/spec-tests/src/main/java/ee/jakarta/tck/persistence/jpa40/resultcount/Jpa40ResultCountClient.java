@@ -58,6 +58,25 @@ public class Jpa40ResultCountClient extends PMClientBase {
         assertEquals(1, query.getResultList().size());
     }
 
+    /**
+     * Tests {@link jakarta.persistence.TypedQuery#getResultCount()} on a native
+     * SQL typed query. The test verifies the total match count is returned
+     * independently of the current pagination settings.
+     */
+    @Test
+    public void nativeTypedQueryGetResultCountTest() {
+        var query = getEntityManager()
+                .createNativeQuery(
+                        "SELECT * FROM JPA40_COUNT_BOOK WHERE CATEGORY = 'fiction' ORDER BY ID",
+                        CountBook.class)
+                .setMaxResults(1);
+
+        assertEquals(2L, query.getResultCount(),
+                "getResultCount() on a native TypedQuery must return the total match count, ignoring setMaxResults");
+        assertEquals(1, query.getResultList().size(),
+                "getResultList() must still respect setMaxResults");
+    }
+
     private void createTestData() {
         EntityTransaction transaction = getEntityTransaction();
         transaction.begin();

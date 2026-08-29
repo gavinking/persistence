@@ -17,10 +17,12 @@
 package ee.jakarta.tck.persistence.jpa40.statement;
 
 import ee.jakarta.tck.persistence.common.PMClientBase;
+import jakarta.persistence.EntityAgent;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Statement;
 import jakarta.persistence.StatementOrTypedQuery;
+import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
@@ -180,6 +182,51 @@ public class Jpa40StatementClient extends PMClientBase {
 
         assertEquals(1, count);
         assertEquals("Criteria", getEntityManager().find(StatementBook.class, 1).getTitle());
+    }
+
+    /**
+     * Verifies that executing a JPQL UPDATE or DELETE {@link Statement} without
+     * an active transaction throws {@link TransactionRequiredException}, as
+     * required by the spec.
+     */
+    @Test
+    public void statementExecuteWithoutTransactionThrowsTRETest() {
+        assertThrows(TransactionRequiredException.class, () ->
+                getEntityManager()
+                        .createStatement("UPDATE Jpa40StatementBook b SET b.title = 'x'")
+                        .execute());
+
+        assertThrows(TransactionRequiredException.class, () ->
+                getEntityManager()
+                        .createStatement("DELETE FROM Jpa40StatementBook b WHERE b.id = 1")
+                        .execute());
+    }
+
+    /**
+     * Verifies that executing a native SQL UPDATE {@link Statement} created
+     * via {@link jakarta.persistence.EntityHandler#createNativeStatement} without
+     * an active transaction throws {@link TransactionRequiredException}.
+     */
+    @Test
+    public void nativeStatementExecuteWithoutTransactionThrowsTRETest() {
+        assertThrows(TransactionRequiredException.class, () ->
+                getEntityManager()
+                        .createNativeStatement("UPDATE JPA40_STATEMENT_BOOK SET TITLE = 'x'")
+                        .execute());
+    }
+
+    /**
+     * Verifies that executing a JPQL UPDATE {@link Statement} obtained from an
+     * {@link EntityAgent} without an active transaction throws
+     * {@link TransactionRequiredException}.
+     */
+    @Test
+    public void agentStatementExecuteWithoutTransactionThrowsTRETest() {
+        try (EntityAgent agent = getEntityManagerFactory().createEntityAgent()) {
+            assertThrows(TransactionRequiredException.class, () ->
+                    agent.createStatement("UPDATE Jpa40StatementBook b SET b.title = 'x'")
+                            .execute());
+        }
     }
 
     private void createTestData() {
