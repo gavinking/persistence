@@ -35,6 +35,9 @@ package jakarta.persistence;
  *     persistence context with no active transaction context.
  * <li>The {@link EntityManager#lock} operation is called on an entity
  *     manager with no active transaction context.
+ * <li>The {@link EntityManager#getLockMode} operation is called on an
+ *     entity manager with no active transaction context, or on an entity
+ *     manager that has not been joined to the current transaction.
  * <li>Any operation of {@code EntityManager} or {@code EntityAgent} which
  *     accepts a {@linkplain LockModeType lock mode} is called on a manager
  *     or agent with no active transaction context, and the given lock mode

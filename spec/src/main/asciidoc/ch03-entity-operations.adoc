@@ -959,6 +959,13 @@ The `lock()` method must not be called without an active transaction.
 If `lock()` is called when there is no active transaction, the provider
 must throw `jakarta.persistence.TransactionRequiredException`.
 
+The `getLockMode()` method must not be called without an active
+transaction, nor on an entity manager that has not been joined to the
+current transaction. If `getLockMode()` is called when there is no
+active transaction, or when the entity manager has not been joined to
+the current transaction, the provider must throw
+`jakarta.persistence.TransactionRequiredException`.
+
 The method `joinTransaction()` associates the persistence context
 underlying the `EntityManager` with the currently active container
 transaction. If `joinTransaction()` is called when there is no active
