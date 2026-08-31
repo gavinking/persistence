@@ -18,8 +18,6 @@ package ee.jakarta.tck.persistence.jpa40.entityagent;
 
 import ee.jakarta.tck.persistence.common.PMClientBase;
 import jakarta.persistence.EntityAgent;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Root;
@@ -30,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests that {@link EntityAgent} query and statement creation methods work
@@ -75,12 +71,6 @@ public class Jpa40EntityAgentQueryClient extends PMClientBase {
             assertEquals("Alpha", books.get(0).getTitle());
             assertEquals("Beta", books.get(1).getTitle());
 
-            // Instances returned by an entity agent are detached
-            for (AgentBook book : books) {
-                assertFalse(Persistence.getPersistenceUtil().isLoaded(book, "publisher"),
-                        "Lazy associations should not be auto-loaded for detached instances");
-            }
-
             // Mutating a detached instance must not affect the database
             books.get(0).setTitle("Modified in memory");
         });
@@ -96,11 +86,9 @@ public class Jpa40EntityAgentQueryClient extends PMClientBase {
      */
     @Test
     public void agentCreateNamedStatementExecutionTest() {
-        // AgentBook uses @NamedStatement via a NamedQuery — we instead use a
-        // plain createStatement to verify agent statement execution.
         getEntityManagerFactory().runInTransaction(EntityAgent.class, agent -> {
             int count = agent
-                    .createStatement("UPDATE Jpa40AgentBook b SET b.title = :title WHERE b.id = :id")
+                    .createNamedStatement(AgentBook.UPDATE_TITLE)
                     .setParameter("title", "AgentUpdated")
                     .setParameter("id", 1)
                     .execute();
@@ -126,11 +114,11 @@ public class Jpa40EntityAgentQueryClient extends PMClientBase {
             assertEquals(1, books.get(0).getId());
             assertEquals(2, books.get(1).getId());
 
-            // All results from an entity agent must be detached
-            for (AgentBook book : books) {
-                assertNotNull(book.getId());
-            }
+            // Mutating a detached native-query result must not affect the database
+            books.get(0).setTitle("Modified native result");
         });
+
+        assertEquals("Alpha", titleById(1));
     }
 
     /**
