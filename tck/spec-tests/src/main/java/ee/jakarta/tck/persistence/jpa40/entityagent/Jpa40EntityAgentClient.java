@@ -486,15 +486,14 @@ public class Jpa40EntityAgentClient extends PMClientBase {
     @Test
     public void runInTransactionRollsBackOnExceptionTest() {
         long countBefore = countBooks();
+        RuntimeException expected = new RuntimeException("force rollback");
 
-        try {
-            getEntityManagerFactory().runInTransaction(em -> {
-                em.persist(new AgentBook(99, "rolled back"));
-                throw new RuntimeException("force rollback");
-            });
-        } catch (RuntimeException ignored) {
-            // expected rethrow
-        }
+        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+                getEntityManagerFactory().runInTransaction(em -> {
+                    em.persist(new AgentBook(99, "rolled back"));
+                    throw expected;
+                }));
+        assertSame(expected, thrown, "runInTransaction must rethrow the exception from the lambda");
 
         // The persist must have been rolled back
         assertEquals(countBefore, countBooks(),
@@ -510,15 +509,14 @@ public class Jpa40EntityAgentClient extends PMClientBase {
     @Test
     public void callInTransactionRollsBackOnExceptionTest() {
         long countBefore = countBooks();
+        RuntimeException expected = new RuntimeException("force rollback");
 
-        try {
-            getEntityManagerFactory().callInTransaction(em -> {
-                em.persist(new AgentBook(98, "call rolled back"));
-                throw new RuntimeException("force rollback");
-            });
-        } catch (RuntimeException ignored) {
-            // expected rethrow
-        }
+        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+                getEntityManagerFactory().callInTransaction(em -> {
+                    em.persist(new AgentBook(98, "call rolled back"));
+                    throw expected;
+                }));
+        assertSame(expected, thrown, "callInTransaction must rethrow the exception from the function");
 
         assertEquals(countBefore, countBooks(),
                 "callInTransaction must roll back the transaction when the function throws");
@@ -532,12 +530,16 @@ public class Jpa40EntityAgentClient extends PMClientBase {
      */
     @Test
     public void agentCallInTransactionReturnsValueAndCommitsTest() {
-        createBooks(new AgentBook(50, "CallReturn"));
-
-        String title = getEntityManagerFactory().callInTransaction(EntityAgent.class,
-                agent -> agent.get(AgentBook.class, 50).getTitle());
+        String title = getEntityManagerFactory().callInTransaction(EntityAgent.class, agent -> {
+            AgentBook book = new AgentBook(50, "CallReturn");
+            agent.insert(book);
+            return book.getTitle();
+        });
 
         assertEquals("CallReturn", title);
+        AgentBook persisted = findBook(50);
+        assertNotNull(persisted, "callInTransaction must commit a successful function");
+        assertEquals("CallReturn", persisted.getTitle());
     }
 
     /**
@@ -548,15 +550,15 @@ public class Jpa40EntityAgentClient extends PMClientBase {
     @Test
     public void agentCallInTransactionRollsBackOnExceptionTest() {
         long countBefore = countBooks();
+        RuntimeException expected = new RuntimeException("force agent call rollback");
 
-        try {
-            getEntityManagerFactory().callInTransaction(EntityAgent.class, agent -> {
-                agent.insert(new AgentBook(96, "agent call rolled back"));
-                throw new RuntimeException("force agent call rollback");
-            });
-        } catch (RuntimeException ignored) {
-            // expected rethrow
-        }
+        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+                getEntityManagerFactory().callInTransaction(EntityAgent.class, agent -> {
+                    agent.insert(new AgentBook(96, "agent call rolled back"));
+                    throw expected;
+                }));
+        assertSame(expected, thrown,
+                "EntityAgent callInTransaction must rethrow the exception from the function");
 
         assertEquals(countBefore, countBooks(),
                 "EntityAgent callInTransaction must roll back when the function throws");
@@ -571,15 +573,15 @@ public class Jpa40EntityAgentClient extends PMClientBase {
     @Test
     public void agentRunInTransactionRollsBackOnExceptionTest() {
         long countBefore = countBooks();
+        RuntimeException expected = new RuntimeException("force agent rollback");
 
-        try {
-            getEntityManagerFactory().runInTransaction(EntityAgent.class, agent -> {
-                agent.insert(new AgentBook(97, "agent rolled back"));
-                throw new RuntimeException("force agent rollback");
-            });
-        } catch (RuntimeException ignored) {
-            // expected rethrow
-        }
+        RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+                getEntityManagerFactory().runInTransaction(EntityAgent.class, agent -> {
+                    agent.insert(new AgentBook(97, "agent rolled back"));
+                    throw expected;
+                }));
+        assertSame(expected, thrown,
+                "EntityAgent runInTransaction must rethrow the exception from the lambda");
 
         assertEquals(countBefore, countBooks(),
                 "EntityAgent runInTransaction must roll back when the lambda throws");
@@ -596,7 +598,8 @@ public class Jpa40EntityAgentClient extends PMClientBase {
         GeneratedIdBook book = new GeneratedIdBook("Generated Title");
         assertNull(book.getId());
 
-        EntityAgent agent = getEntityManagerFactory().createEntityAgent();
+        var factory = getEntityManagerFactory();
+        EntityAgent agent = factory.createEntityAgent();
         EntityTransaction transaction = agent.getTransaction();
         try {
             transaction.begin();
@@ -608,8 +611,8 @@ public class Jpa40EntityAgentClient extends PMClientBase {
         }
 
         assertNotNull(book.getId(), "Generated id must be assigned back to the entity instance");
-        assertNotNull(agent.getEntityManagerFactory()
-                .callInTransaction(em -> em.find(GeneratedIdBook.class, book.getId())));
+        assertNotNull(factory.callInTransaction(
+                em -> em.find(GeneratedIdBook.class, book.getId())));
     }
 
     /**
@@ -638,8 +641,9 @@ public class Jpa40EntityAgentClient extends PMClientBase {
 
     /**
      * Verifies that {@link EntityAgent#isOpen()} returns {@code false} after the
-     * agent is closed, and that subsequent calls to agent operations throw
-     * {@link IllegalStateException}.
+     * agent is closed, that subsequent calls to agent operations throw
+     * {@link IllegalStateException}, and that the methods explicitly exempted by
+     * {@link EntityAgent#close()} remain available.
      */
     @Test
     public void closedEntityAgentThrowsIllegalStateExceptionTest() {
@@ -655,7 +659,9 @@ public class Jpa40EntityAgentClient extends PMClientBase {
                 () -> assertThrows(IllegalStateException.class, () -> agent.find(AgentBook.class, 1)),
                 () -> assertThrows(IllegalStateException.class,
                         () -> agent.createQuery("SELECT b FROM Jpa40AgentBook b", AgentBook.class)),
-                () -> assertThrows(IllegalStateException.class, () -> agent.getTransaction()));
+                () -> assertThrows(IllegalStateException.class, agent::getEntityManagerFactory),
+                () -> assertDoesNotThrow(agent::getTransaction),
+                () -> assertDoesNotThrow(agent::getProperties));
     }
 
 }

@@ -174,9 +174,11 @@ public class Jpa40QueryGraphClient extends PMClientBase {
             QueryGraphBook book = books.get(0);
             // publisher association should have been fetched by the graph
             assertTrue(Persistence.getPersistenceUtil().isLoaded(book, "publisher"));
-            // authors was not in the graph and should be lazy
-            assertFalse(Persistence.getPersistenceUtil().isLoaded(book, "authors"));
+            book.setTitle("Modified in memory");
         });
+
+        assertEquals("Alpha", getEntityManager().find(QueryGraphBook.class, 1).getTitle(),
+                "EntityAgent query results must be detached");
     }
 
     /**

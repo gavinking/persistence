@@ -22,12 +22,18 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedStatement;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 @Entity(name = "Jpa40AgentBook")
 @Table(name = "JPA40_AGENT_BOOK")
+@NamedStatement(
+        name = AgentBook.UPDATE_TITLE,
+        statement = "UPDATE Jpa40AgentBook b SET b.title = :title WHERE b.id = :id")
 public class AgentBook {
+
+    public static final String UPDATE_TITLE = "Jpa40AgentBook.updateTitle";
 
     @Id
     private Integer id;
