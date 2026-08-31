@@ -796,7 +796,8 @@ public interface EntityManager extends EntityHandler {
      * this persistence context on the given managed entity instance.
      * @param entity  a managed entity instance
      * @return the lock mode currently held, or {@link LockModeType#NONE}
-     *         if there is no active transaction or if the entity manager
+     *         if the given {@code entity} instance is managed, but
+     *         there is no active transaction or the entity manager
      *         has not been joined to the current transaction
      * @throws IllegalArgumentException if the given instance is not
      *         a managed entity
