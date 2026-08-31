@@ -28,6 +28,7 @@ import ee.jakarta.tck.persistence.common.PMClientBase;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Query;
+import jakarta.persistence.SynchronizationType;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
 
@@ -330,20 +331,52 @@ public class QueryLockClient extends PMClientBase {
 	}
 
 	/*
-	 * @testName: getLockModeObjectTransactionRequiredException1Test
+	 * @testName: getLockModeObjectIllegalArgumentExceptionWithoutTransactionTest
 	 * 
-	 * @assertion_ids: PERSISTENCE:JAVADOC:329; PERSISTENCE:JAVADOC:483
+	 * @assertion_ids: PERSISTENCE:JAVADOC:484
 	 * 
-	 * @test_Strategy: Get an entity, commit the transaction then try to access the
-	 * LockModeType and TransactionRequiredException should be thrown
-	 *
+	 * @test_Strategy: Call getLockMode() for an unmanaged entity when there is no
+	 * active transaction. IllegalArgumentException should be thrown.
 	 *
 	 */
 	@Test
-	public void getLockModeObjectTransactionRequiredException1Test() throws Exception {
+	public void getLockModeObjectIllegalArgumentExceptionWithoutTransactionTest() throws Exception {
 		boolean pass = false;
 
+		logger.log(Logger.Level.TRACE, "Begin getLockModeObjectIllegalArgumentExceptionWithoutTransactionTest");
+		try {
+			EntityManager em = getEntityManager();
+			Employee e = new Employee(1, "Alan", "Frechette", d1, (float) 35000.0);
+
+			try {
+				em.getLockMode(e);
+			} catch (IllegalArgumentException iae) {
+				logger.log(Logger.Level.TRACE, "Received expected IllegalArgumentException");
+				pass = true;
+			}
+		} catch (Exception e) {
+			logger.log(Logger.Level.ERROR, "Unexpected exception occurred", e);
+		}
+
+		if (!pass) {
+			throw new Exception("getLockModeObjectIllegalArgumentExceptionWithoutTransactionTest failed");
+		}
+	}
+
+	/*
+	 * @testName: getLockModeObjectNoneAfterCommitTest
+	 *
+	 * @assertion_ids: PERSISTENCE:JAVADOC:329
+	 *
+	 * @test_Strategy: Get an entity, commit the transaction then try to access the
+	 * LockModeType. LockModeType.NONE should be returned.
+	 *
+	 */
+	@Test
+	public void getLockModeObjectNoneAfterCommitTest() throws Exception {
+		boolean pass = true;
 		int expected = 9;
+
 		try {
 
 			getEntityTransaction().begin();
@@ -356,25 +389,25 @@ public class QueryLockClient extends PMClientBase {
 			Collection<Employee> c = query.getResultList();
 			getEntityTransaction().commit();
 			logger.log(Logger.Level.TRACE, "isActive=" + getEntityTransaction().isActive());
-			int found = 0;
-			for (Employee e : c) {
-				try {
-					em.getLockMode(e);
-					logger.log(Logger.Level.ERROR, "Did not get TransactionRequiredException for employee:" + e);
-				} catch (TransactionRequiredException tre) {
-					found++;
-				}
-			}
-			if (found == expected) {
-				logger.log(Logger.Level.TRACE, "Got expected number of TransactionRequiredExceptions:" + expected);
-				pass = true;
-			} else {
+			if (c.size() != expected) {
 				logger.log(Logger.Level.ERROR,
-						"Number of TransactionRequiredException Expected:" + c.size() + ", Actual:" + found);
+						"Number of employees expected:" + expected + ", Actual:" + c.size());
+				pass = false;
+			}
+			for (Employee e : c) {
+				LockModeType actual = em.getLockMode(e);
+				if (actual == LockModeType.NONE) {
+					logger.log(Logger.Level.TRACE, "Received expected LockModeType.NONE for employee:" + e);
+				} else {
+					logger.log(Logger.Level.ERROR,
+							"Expected LockModeType.NONE for employee:" + e + ", Actual:" + actual);
+					pass = false;
+				}
 			}
 
 		} catch (Exception e) {
 			logger.log(Logger.Level.ERROR, "Unexpected exception occurred", e);
+			pass = false;
 		} finally {
 			try {
 				if (getEntityTransaction().isActive()) {
@@ -387,7 +420,61 @@ public class QueryLockClient extends PMClientBase {
 		}
 
 		if (!pass) {
-			throw new Exception("getLockModeObjectTransactionRequiredException1Test failed");
+			throw new Exception("getLockModeObjectNoneAfterCommitTest failed");
+		}
+	}
+
+	/*
+	 * @testName: getLockModeObjectUnjoinedUnsynchronizedEntityManagerTest
+	 *
+	 * @assertion_ids: PERSISTENCE:JAVADOC:329
+	 *
+	 * @test_Strategy: In a Jakarta EE environment, begin a JTA transaction and
+	 * obtain a managed entity from an unjoined UNSYNCHRONIZED entity manager.
+	 * LockModeType.NONE should be returned.
+	 *
+	 */
+	@Test
+	public void getLockModeObjectUnjoinedUnsynchronizedEntityManagerTest() throws Exception {
+		if (isStandAloneMode()) {
+			logger.log(Logger.Level.TRACE, "Test requires a Jakarta EE/JTA environment");
+			return;
+		}
+
+		boolean pass = false;
+		EntityManager em = null;
+		try {
+			getEntityTransaction().begin();
+			em = getEntityManagerFactory().createEntityManager(SynchronizationType.UNSYNCHRONIZED);
+			Employee employee = em.find(Employee.class, 1);
+
+			if (!em.contains(employee)) {
+				logger.log(Logger.Level.ERROR, "Employee is not managed by the UNSYNCHRONIZED entity manager");
+			} else if (em.isJoinedToTransaction()) {
+				logger.log(Logger.Level.ERROR, "UNSYNCHRONIZED entity manager unexpectedly joined the transaction");
+			} else {
+				LockModeType actual = em.getLockMode(employee);
+				if (actual == LockModeType.NONE) {
+					logger.log(Logger.Level.TRACE,
+							"Received expected LockModeType.NONE from the unjoined entity manager");
+					pass = true;
+				} else {
+					logger.log(Logger.Level.ERROR, "Expected LockModeType.NONE, Actual:" + actual);
+				}
+			}
+		} catch (Exception e) {
+			logger.log(Logger.Level.ERROR, "Unexpected exception occurred", e);
+		} finally {
+			if (em != null && em.isOpen()) {
+				em.close();
+			}
+			if (getEntityTransaction().isActive()) {
+				getEntityTransaction().rollback();
+			}
+		}
+
+		if (!pass) {
+			throw new Exception("getLockModeObjectUnjoinedUnsynchronizedEntityManagerTest failed");
 		}
 	}
 
@@ -396,8 +483,8 @@ public class QueryLockClient extends PMClientBase {
 	 * 
 	 * @assertion_ids: PERSISTENCE:JAVADOC:484
 	 * 
-	 * @test_Strategy: Get an entity, detached the entity and then try to access the
-	 * LockModeType and TransactionRequiredException should be thrown
+	 * @test_Strategy: Get an entity, detach the entity and then try to access the
+	 * LockModeType. IllegalArgumentException should be thrown.
 	 *
 	 *
 	 */
