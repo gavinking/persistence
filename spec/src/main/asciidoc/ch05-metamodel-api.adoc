@@ -18,6 +18,12 @@ A static metamodel class is a class with static members providing direct
 typesafe access to metamodel objects representing the persistent members
 of a given managed class.
 
+The metamodel object representing a single-valued persistent attribute
+must implement the interface specified for its field in the canonical
+metamodel, as defined in <<canonical-metamodel-for-managed-classes>>. This
+requirement applies both to programmatic lookup and to access through
+static metamodel classes.
+
 === Static Metamodel Classes [[a6933]]
 
 A set of static metamodel classes corresponding to the managed classes of
@@ -48,6 +54,10 @@ the responsibility of the persistence provider to initialize the state of
 the static metamodel classes representing managed classes belonging to the
 persistence unit. Any generated metamodel classes must be accessible on the
 classpath.
+
+For compatibility with earlier versions of this specification, a provider
+must also initialize fields declared using `SingularAttribute` in place
+of one of its specialized subinterfaces.
 
 An application must not access members of a static metamodel class before
 creation of an entity manager factory for a persistence unit to which the
@@ -107,7 +117,7 @@ collisions resulting from the faithful application of the rules specified
 here or below when generating canonical metamodel classes.
 ====
 
-==== Canonical Metamodel for Managed Classes
+==== Canonical Metamodel for Managed Classes [[canonical-metamodel-for-managed-classes]]
 
 The metamodel class for a managed class `X` is generated as follows:
 
@@ -141,13 +151,47 @@ is uppercase, and then replacing each character which is not
 a legal Java identifier character with an underscore.
 
 * For every persistent non-collection-valued attribute `y` declared by
-`X`, where the type of `y` is `Y`, the metamodel class must contain a
-declaration as follows:
+`X`, the metamodel class must contain a declaration as follows:
 +
 [source,java]
 ----
-public static volatile SingularAttribute<X, Y> y;
+public static volatile A y;
 ----
++
+Here `Y` denotes the Java type of `y`, or the corresponding wrapper class
+if `y` has a primitive type. For a basic attribute, `A` is selected using
+the first applicable row of the following table. This selection uses the
+Java type of the attribute before any conversion by an attribute converter.
++
+.Metamodel types for single-valued basic attributes
+[cols="3,2", options="header"]
+|===
+|Java type `Y` |Metamodel field type `A`
+
+|`java.lang.Boolean`
+|`BooleanAttribute<X>`
+
+|`java.lang.String`
+|`TextAttribute<X>`
+
+|A subtype of `java.lang.Number` assignable to `Comparable<Y>`
+|`NumericAttribute<X, Y>`
+
+|A subtype of `java.time.temporal.Temporal` assignable to `Comparable<? super Y>`
+|`TemporalAttribute<X, Y>`
+
+|Any other type assignable to `Comparable<? super Y>`, including any Java `enum` type
+|`ComparableAttribute<X, Y>`
+
+|Any other type
+|`SingularAttribute<X, Y>`
+|===
++
+In particular, a basic attribute of enum type `Y` is represented by
+`ComparableAttribute<X, Y>`, regardless of its enum mapping strategy.
++
+For an embedded attribute or a single-valued relationship, `A` is
+`SingularAttribute<X, Y>`, even if `Y` implements `Comparable`.
 
 * For every persistent collection-valued attribute `z` declared by class
 `X`, where the element type of `z` is `Z`, the metamodel class must contain
@@ -364,6 +408,7 @@ package com.example;
 
 import java.math.BigDecimal;
 import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.NumericAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.persistence.metamodel.SetAttribute;
 import jakarta.persistence.metamodel.StaticMetamodel;
@@ -372,11 +417,11 @@ import jakarta.persistence.metamodel.StaticMetamodel;
 public class Order_ {
     public static volatile EntityType<Order> class_;
 
-    public static volatile SingularAttribute<Order, Integer> orderId;
+    public static volatile NumericAttribute<Order, Integer> orderId;
     public static volatile SingularAttribute<Order, Customer> customer;
     public static volatile SetAttribute<Order, Item> lineItems;
     public static volatile SingularAttribute<Order, Address> shippingAddress;
-    public static volatile SingularAttribute<Order, BigDecimal> totalCost;
+    public static volatile NumericAttribute<Order, BigDecimal> totalCost;
 
     public static final String LINE_ITEMS = "lineItems";
     public static final String ORDER_ID = "orderId";
