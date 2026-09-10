@@ -46,9 +46,7 @@ public class BasicAnnotationClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -58,8 +56,8 @@ public class BasicAnnotationClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			A aRef = new A("9", null, 9, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			getEntityManager().persist(aRef);
 			getEntityManager().flush();

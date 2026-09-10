@@ -31,7 +31,7 @@ public class LobAnnotationClient extends PMClientBase {
 
 	private DataTypes dataTypes;
 
-	private Byte[] smallByteArray = null;
+	private byte[] smallByteArray = null;
 
 	public JavaArchive createDeployment() throws Exception {
 		String pkgNameWithoutSuffix = LobAnnotationClient.class.getPackageName();
@@ -65,7 +65,7 @@ public class LobAnnotationClient extends PMClientBase {
 	 * @assertion_ids: PERSISTENCE:SPEC:524; PERSISTENCE:SPEC:528
 	 * 
 	 * @test_Strategy: The persistent property of an entity may be of the following
-	 * type: Byte[]
+	 * type: byte[]
 	 *
 	 */
 	@Test
@@ -74,7 +74,7 @@ public class LobAnnotationClient extends PMClientBase {
 		boolean pass1 = false;
 		boolean pass2 = false;
 
-		Byte[] largeByteArray = null;
+		byte[] largeByteArray = null;
 
 		try {
 			getEntityTransaction().begin();
@@ -148,7 +148,7 @@ public class LobAnnotationClient extends PMClientBase {
 
 	}
 
-	private Byte[] createSmallByteArray() {
+	private byte[] createSmallByteArray() {
 
 		// Create a String of size 1MB
 		StringBuffer strbuf = new StringBuffer();
@@ -160,19 +160,11 @@ public class LobAnnotationClient extends PMClientBase {
 		System.out.println("String Buffer :" + value);
 
 		// get byte array from the string
-		final byte myByte[] = value.getBytes();
-
-		// store primitive byte array to array of Byte objects
-		Byte convertedByte[] = new Byte[myByte.length];
-		for (int i = 0; i < myByte.length; i++) {
-			convertedByte[i] = Byte.valueOf(myByte[i]);
-		}
-
-		return convertedByte;
+		return value.getBytes();
 
 	}
 
-	private Byte[] createLargeByteArray() {
+	private byte[] createLargeByteArray() {
 
 		// Create a String of size 4MB
 		StringBuffer strbuf = new StringBuffer();
@@ -184,15 +176,7 @@ public class LobAnnotationClient extends PMClientBase {
 		System.out.println("String Buffer :" + value);
 
 		// get byte array from the string
-		final byte myByte[] = value.getBytes();
-
-		// store primitive byte array to array of Byte objects
-		Byte convertedByte[] = new Byte[myByte.length];
-		for (int i = 0; i < myByte.length; i++) {
-			convertedByte[i] = Byte.valueOf(myByte[i]);
-		}
-
-		return convertedByte;
+		return value.getBytes();
 
 	}
 

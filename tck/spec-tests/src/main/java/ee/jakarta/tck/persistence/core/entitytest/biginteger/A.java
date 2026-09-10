@@ -83,13 +83,7 @@ public class A implements java.io.Serializable {
 	protected char[] basicCharArray;
 
 	@Basic
-	protected Character[] basicBigCharArray;
-
-	@Basic
 	protected byte[] basicByteArray;
-
-	@Basic
-	protected Byte[] basicBigByteArray;
 
 	@Id
 	protected BigInteger basicBigInteger;
@@ -119,9 +113,9 @@ public class A implements java.io.Serializable {
 
 	public A(String id, String name, int value, Integer basicInteger, short basicShort, Short basicBigShort,
 			float basicFloat, Float basicBigFloat, long basicLong, Long basicBigLong, double basicDouble,
-			Double basicBigDouble, char basicChar, char[] basicCharArray, Character[] basicBigCharArray,
-			byte[] basicByteArray, Byte[] basicBigByteArray, BigInteger basicBigInteger, BigDecimal basicBigDecimal,
-			Date basicDate, Time basicTime, Timestamp basicTimestamp, Calendar basicCalendar) {
+			Double basicBigDouble, char basicChar, char[] basicCharArray, byte[] basicByteArray,
+			BigInteger basicBigInteger, BigDecimal basicBigDecimal, Date basicDate, Time basicTime,
+			Timestamp basicTimestamp, Calendar basicCalendar) {
 
 		this.id = id;
 		this.name = name;
@@ -137,9 +131,7 @@ public class A implements java.io.Serializable {
 		this.basicBigDouble = basicBigDouble;
 		this.basicChar = basicChar;
 		this.basicCharArray = basicCharArray;
-		this.basicBigCharArray = basicBigCharArray;
 		this.basicByteArray = basicByteArray;
-		this.basicBigByteArray = basicBigByteArray;
 		this.basicBigInteger = basicBigInteger;
 		this.basicBigDecimal = basicBigDecimal;
 		this.basicDate = basicDate;
@@ -235,22 +227,6 @@ public class A implements java.io.Serializable {
 
 	public void setBasicShort(short basicShort) {
 		this.basicShort = basicShort;
-	}
-
-	public Byte[] getBasicBigByteArray() {
-		return basicBigByteArray;
-	}
-
-	public void setBasicBigByteArray(Byte[] basicBigByteArray) {
-		this.basicBigByteArray = basicBigByteArray;
-	}
-
-	public Character[] getBasicBigCharArray() {
-		return basicBigCharArray;
-	}
-
-	public void setBasicBigCharArray(Character[] basicBigCharArray) {
-		this.basicBigCharArray = basicBigCharArray;
 	}
 
 	public BigDecimal getBasicBigDecimal() {

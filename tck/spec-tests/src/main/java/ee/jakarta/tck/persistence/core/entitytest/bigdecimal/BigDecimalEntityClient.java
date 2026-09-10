@@ -99,9 +99,7 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -111,8 +109,8 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			aRef = new A("1", "a1", 1, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			getEntityTransaction().begin();
 			if (!getInstanceStatus(aRef)) {
@@ -178,9 +176,7 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -190,8 +186,8 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			aRef = new A("2", "a2", 2, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			createA(aRef);
 
@@ -266,9 +262,7 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -278,8 +272,8 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			a1 = new A("3", "a3", 3, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			logger.log(Logger.Level.TRACE, "Persist Instance");
 			getEntityManager().persist(a1);
@@ -351,9 +345,7 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -363,8 +355,8 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			aRef = new A("4", "a4", 4, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			createA(aRef);
 
@@ -445,9 +437,7 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final double basicDouble = 1234.5;
 			final Double basicBigDouble = basicDouble;
 			final char[] charArray = { 'a', 'b', 'c' };
-			final Character[] bigCharacterArray = { 'a', 'b', 'c' };
 			final byte[] byteArray = "abc".getBytes();
-			final Byte[] bigByteArray = { (byte) 111, (byte) 101, (byte) 100 };
 			final BigInteger bigInteger = new BigInteger("12345");
 			final BigDecimal bigDecimal = new BigDecimal(bigInteger);
 			final Date date = new Date();
@@ -457,8 +447,8 @@ public class BigDecimalEntityClient extends PMClientBase {
 			final Calendar calendar = Calendar.getInstance();
 
 			aRef = new A("5", "a5", 5, integer, basicShort, basicBigShort, basicFloat, basicBigFloat, basicLong,
-					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, bigCharacterArray, byteArray,
-					bigByteArray, bigInteger, bigDecimal, date, time, timeStamp, calendar);
+					basicBigLong, basicDouble, basicBigDouble, 'a', charArray, byteArray, bigInteger, bigDecimal,
+					date, time, timeStamp, calendar);
 
 			logger.log(Logger.Level.TRACE, "Persist Instance");
 			createA(aRef);

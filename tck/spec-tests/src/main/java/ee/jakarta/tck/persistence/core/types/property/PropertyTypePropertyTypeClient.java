@@ -505,16 +505,16 @@ public class PropertyTypePropertyTypeClient extends PMClientBase {
 	 * PERSISTENCE:SPEC:1976;
 	 * 
 	 * @test_Strategy: The persistent property of an entity may be of the following
-	 * type: Byte[]
+	 * type: byte[]
 	 *
 	 */
 	@Test
 	public void propertyTypeTest9() throws Exception {
 
 		boolean pass = false;
-		final Byte[] b = { 31, 32, 33, 63, 64, 65 };
-		final Byte bv = 5;
-		Byte[] a = null;
+		final byte[] b = { 31, 32, 33, 63, 64, 65 };
+		final byte bv = 5;
+		byte[] a = null;
 
 		try {
 			getEntityTransaction().begin();
@@ -574,7 +574,7 @@ public class PropertyTypePropertyTypeClient extends PMClientBase {
 	 * PERSISTENCE:SPEC:1976;
 	 * 
 	 * @test_Strategy: The persistent property of an entity may be of the following
-	 * type: Character[]
+	 * type: char[]
 	 *
 	 */
 	@Test
@@ -584,7 +584,7 @@ public class PropertyTypePropertyTypeClient extends PMClientBase {
 
 		try {
 			getEntityTransaction().begin();
-			Character[] charData = new Character[] { 'C', 'T', 'S' };
+			char[] charData = new char[] { 'C', 'T', 'S' };
 			logger.log(Logger.Level.TRACE, "FIND D1 IN propertyTypeTest10");
 			d1 = getEntityManager().find(DataTypes.class, 1);
 
@@ -898,8 +898,8 @@ public class PropertyTypePropertyTypeClient extends PMClientBase {
 		try {
 			getEntityTransaction().begin();
 
-			Character[] cArray = { 'a' };
-			Byte[] bArray = { (byte) 100 };
+			char[] cArray = { 'a' };
+			byte[] bArray = { (byte) 100 };
 			d1 = new DataTypes(1, 'a', true, (short) 100, 500, 300L, 50D, 1.0F, cArray, bArray);
 			d1.setEnumData(Grade.C);
 
