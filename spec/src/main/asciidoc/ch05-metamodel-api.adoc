@@ -18,11 +18,11 @@ A static metamodel class is a class with static members providing direct
 typesafe access to metamodel objects representing the persistent members
 of a given managed class.
 
-The metamodel object representing a single-valued persistent attribute
-must implement the interface specified for its field in the canonical
-metamodel, as defined in <<canonical-metamodel-for-managed-classes>>. This
-requirement applies both to programmatic lookup and to access through
-static metamodel classes.
+The metamodel object representing a persistent attribute must implement
+the interface type specified for its field type in the canonical metamodel,
+as specified in <<canonical-metamodel-for-managed-classes>>. This
+requirement applies both to programmatic lookup and to access via static
+metamodel classes.
 
 === Static Metamodel Classes [[a6933]]
 
